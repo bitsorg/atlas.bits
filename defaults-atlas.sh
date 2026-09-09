@@ -59,23 +59,28 @@ overrides:
     version: "9.20.0.48"      # recipe currently 8.2.4.15 (major bump)
     tag: "9.20.0.48"
 
-  # ATLAS author-patched generators — REQUIRE the matching author patch in the
-  # lcg.bits recipe (same class as recola/onnx/... held in the base bump). The
-  # recipes today carry the OLD .atlasN patch, so these will NOT build until the
-  # recipe ships the new patch. Pinned here to record the target; reconcile with
-  # patches before enabling.
+  # ATLAS author-patched generators. The lcg.bits recipes now carry the matching
+  # patches (version-gated), copied from lcgcmake LCG_110, so epos4/hijing build
+  # at the ATLAS label. madgraph is the exception — see its note.
   epos4:
-    version: "4.0.3.atlas3"   # recipe has epos4-4.0.3.atlas1.patch
+    version: "4.0.3.atlas3"   # epos4-4.0.3.atlas3.patch present (version-gated)
     tag: "4.0.3.atlas3"
   hijing:
-    version: "1.383bs.2.atlas20260625"   # recipe has hijing-1.383bs.2.patch
+    version: "1.383bs.2.atlas20260625"   # hijing-1.383bs.2.atlas20260625.patch present (gated)
     tag: "1.383bs.2.atlas20260625"
+  # madgraph: aligned to base 3.6.4.atlas2. _ATLAS_5 wants 3.5.11.atlas16, but that
+  # needs source MG5_aMC_v3.5.11.tar.gz and an overlay overrides only version/tag,
+  # not sources — so the older ATLAS line can't be selected here.
   madgraph5amc:
-    version: "3.5.11.atlas16"            # recipe has madgraph5amc-3.3.1.atlas1.patch
-    tag: "3.5.11.atlas16"
+    version: "3.6.4.atlas2"
+    tag: "3.6.4.atlas2"
 
-  # Also in heptools-110_ATLAS_5 but NO recipe in lcg.bits yet — add before use:
-  #   tauola++ 1.1.9.atlas2  (recipe: lcg.bits/tauolacpp.sh; needs atlas2 patch)
+  # tauola++: ATLAS pins atlas1 (the base), NOT the _ATLAS_5 atlas2 — the atlas2
+  # patch is not in lcgcmake LCG_110. Override key is the bits package name.
+  tauolacpp:
+    version: "1.1.9.atlas1"
+
+  # In heptools-110_ATLAS_5 but NO recipe in lcg.bits yet — add before use:
   #   jax_cuda12_plugin / jax_cuda12_pjrt  (= ${jax_native_version})
 
 disable:

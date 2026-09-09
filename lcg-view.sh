@@ -30,11 +30,17 @@ MODULE_OPTIONS="--none"    # installs a manifest (data), no bin/lib
 function Build() {
   local relnum="110" postfix="_ATLAS_5"
   local plat="${LCG_PLATFORM:-x86_64-el9-gcc15-opt}"
-  local dest="$INSTALLROOT/LCG_${relnum}${postfix}"
-  mkdir -p "$dest"
-  # NEW bits helper (the one genuinely new piece): dump the resolved LCG closure
-  # as  name;hash;version;<abs install prefix>;deps  — bits has all of these,
-  # a recipe bash body does not. Split externals vs generators by recipe class.
-  bits lcg-view-manifest --closure externals  --abs-paths > "$dest/LCG_externals_${plat}.txt"
-  bits lcg-view-manifest --closure generators --abs-paths > "$dest/LCG_generators_${plat}.txt"
+  # `bits lcg-view` scans the built LCG closure in the work dir (each package's
+  # .meta.json) and writes $INSTALLROOT/LCG_${relnum}${postfix}/LCG_externals_<plat>.txt
+  # (+ generators). $LCG_VIEW_ROOT (=$INSTALLROOT) is then exported as
+  # LCG_RELEASE_BASE (see frontmatter), so find_package(LCG) resolves here.
+  # TODO(verify on build host): the work dir + arch to pass from inside a recipe
+  # build. $ARCHITECTURE is the bits arch; the work dir is the build work dir.
+  bits lcg-view \
+    --architecture "$ARCHITECTURE" \
+    --work-dir "${WORK_DIR:-${BITS_WORK_DIR:-$PWD}}" \
+    --platform "$plat" \
+    --version-number "$relnum" \
+    --postfix "$postfix" \
+    --out "$INSTALLROOT"
 }
