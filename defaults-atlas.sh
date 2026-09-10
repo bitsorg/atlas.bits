@@ -22,7 +22,7 @@ env:
   # $LCG_RELEASE_BASE. build_externals.sh also passes this as -DLCG_VERSION_POSTFIX.
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 
-# --- LCG_110 _ATLAS_5 externals deltas (base lcg.bits LCG_110 + these) ---
+# ===== LCG_110 _ATLAS_5 externals deltas (base lcg.bits LCG_110 + these) =====
 overrides:
   # Straight version pins (recipe present, no patch coupling):
   compilebox:
@@ -90,3 +90,5 @@ disable:
   - acts            # AthenaExternals builds its own ACTS (v47.6.1)
   - onnxruntime
   - tf2onnx
+
+---
