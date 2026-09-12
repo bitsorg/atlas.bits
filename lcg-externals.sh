@@ -1,0 +1,76 @@
+package: lcg-externals
+description: ATLAS LCG externals (top-level), seeded from LCG_110_ATLAS_5 (x86_64-el9-gcc15-opt)
+version: "1"
+license: Apache-2.0
+requires:
+  - lcg.bits
+  - CMake
+  - AIDA
+  - auth_get_sso_cookie
+  - autopep8
+  - boto3
+  - coin3d
+  - configobj
+  - cppcheck
+  - cppgsl
+  - CppUnit
+  - cudnn
+  - cx_oracle
+  - distro
+  - doxygen
+  - eigen
+  - fjcontrib
+  - flake8_bugbear
+  - flake8_builtins
+  - fmt
+  - Frontier_Client
+  - ginac
+  - git
+  - googletest
+  - gperftools
+  - grpc
+  - hdf5_mpi
+  - heaptrack
+  - hepmc3
+  - highfive
+  - igprof
+  - ipython
+  - kokkos
+  - lcgenv
+  - libm_aocl
+  - lxml
+  - matplotlib
+  - maven
+  - mysql
+  - oracledb
+  - pandas
+  - pathos
+  - protobuf2
+  - pydantic
+  - pygraphviz
+  - PyJWT
+  - pymysql
+  - pyqt5
+  - pyslha
+  - pytest
+  - PyYAML
+  - rangev3
+  - RELAX
+  - scikitlearn
+  - sqlalchemy
+  - sqlparse
+  - stomppy
+  - swig
+  - sympy
+  - tqdm
+  - uncertainties
+  - valgrind
+  - wheel
+  - XercesC
+  - yamlcpp
+  # - ccache   # provided by GCC-Toolchain (libexec/ccache)
+  # - dmtcp   # TODO: no lcg.bits recipe; add only if the build needs it
+build_requires:
+  - bits-recipe-tools
+  - "GCC-Toolchain:(?!osx)"
+---

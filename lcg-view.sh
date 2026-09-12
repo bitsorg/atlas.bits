@@ -3,11 +3,12 @@ description: Emit an lcgcmake-style LCG release view over the bits LCG closure,
   so ATLAS find_package(LCG N EXACT) resolves against bits-built packages.
 version: "1"
 requires:
-  # The LCG closure this view describes must be present in the local cache
-  # before the manifest is generated. TODO: confirm the LCG externals
-  # meta-package name in lcg.bits / stacks.bits (e.g. `externals`).
+  # ATLAS's top-level LCG dependency lists (seeded from the LCG_110_ATLAS_5
+  # manifest). bits resolves the full transitive closure; this recipe then
+  # scans it and writes the LCG_externals/generators manifest below.
   - lcg.bits
-  - externals
+  - lcg-externals
+  - lcg-generators
 build_requires:
   - bits-recipe-tools
 env:
