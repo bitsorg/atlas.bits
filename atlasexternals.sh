@@ -18,7 +18,7 @@ env:
   # build_externals.sh reads LCG_PLATFORM and passes -DLCG_VERSION_POSTFIX. Kept
   # on this ATLAS-only recipe, not in shared defaults, so the reusable LCG
   # externals keep stacks-identical hashes.
-  LCG_PLATFORM: "x86_64-el9-gcc14-opt"
+  LCG_PLATFORM: "x86_64-ubuntu2510-gcc15-opt"
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 system:
   # off = network ALLOWED (sandbox_network is "is the restriction on?"; default
@@ -39,7 +39,7 @@ MODULE_OPTIONS="--lib --cmake"   # expose AthenaExternals libs + CMake config to
 # (via lcg-view -> LCG_RELEASE_BASE) and the toolchain; ATLAS's script pins
 # atlasexternals (externals.txt) + Gaudi/acts/GeoModel/vecmem + LCG 110.
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
-export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-ubuntu2510-gcc15-opt}"
 # -c disables RPM packaging.
 "$SOURCEDIR/Projects/Athena/build_externals.sh" -c
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
