@@ -1,6 +1,5 @@
 package: atlasexternals
-description: ATLAS AthenaExternals project, built from athena's own
-  build_externals.sh on an lcg.bits LCG base.
+description: ATLAS AthenaExternals project, built from athena's own build_externals.sh on an lcg.bits LCG base.
 version: "2.1.89"       # AthenaExternalsVersion, athena/Projects/Athena/externals.txt
                         # TODO(scoped option 3): read from externals.txt to avoid drift.
 tag: "%(version)s"      # NB: the athena source tag (below) is what actually
@@ -11,7 +10,7 @@ requires:
 build_requires:
   - bits-recipe-tools
   - CMake
-  - Ninja
+  - ninja
   - Python
   - "GCC-Toolchain:(?!osx)"
 system:

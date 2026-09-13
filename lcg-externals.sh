@@ -14,7 +14,7 @@ requires:
   - cppcheck
   - cppgsl
   - CppUnit
-  - cudnn
+  - cudnn:(?cuda)
   - cx_oracle
   - distro
   - doxygen

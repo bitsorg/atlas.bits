@@ -1,6 +1,5 @@
 package: lcg-view
-description: Emit an lcgcmake-style LCG release view over the bits LCG closure,
-  so ATLAS find_package(LCG N EXACT) resolves against bits-built packages.
+description: Emit an lcgcmake-style LCG release view over the bits LCG closure so ATLAS find_package(LCG N EXACT) resolves against bits-built packages.
 version: "1"
 requires:
   # ATLAS's top-level LCG dependency lists (seeded from the LCG_110_ATLAS_5
