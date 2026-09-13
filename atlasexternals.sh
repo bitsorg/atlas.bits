@@ -13,6 +13,12 @@ build_requires:
   - ninja
   - Python
   - "GCC-Toolchain:(?!osx)"
+env:
+  # build_externals.sh reads LCG_PLATFORM and passes -DLCG_VERSION_POSTFIX. Kept
+  # on this ATLAS-only recipe, not in shared defaults, so the reusable LCG
+  # externals keep stacks-identical hashes.
+  LCG_PLATFORM: "x86_64-el9-gcc15-opt"
+  LCG_VERSION_POSTFIX: "_ATLAS_5"
 system:
   # off = network ALLOWED (sandbox_network is "is the restriction on?"; default
   # on blocks network). build_externals.sh clones atlasexternals and downloads

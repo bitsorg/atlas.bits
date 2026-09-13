@@ -15,6 +15,11 @@ env:
   # directory that CONTAINS LCG_110_ATLAS_5/). $LCG_VIEW_ROOT is the bits
   # per-package root var for `lcg-view`.
   LCG_RELEASE_BASE: "$LCG_VIEW_ROOT"
+  # Platform/postfix name the emitted manifest (LCG_externals_<platform>.txt and
+  # the LCG_110<postfix> dir). Kept on this ATLAS-only recipe, NOT in shared
+  # defaults, so they do not invalidate the reusable LCG externals' hashes.
+  LCG_PLATFORM: "x86_64-el9-gcc15-opt"
+  LCG_VERSION_POSTFIX: "_ATLAS_5"
 ---
 #!/bin/bash -e
 ##############################

@@ -3,12 +3,13 @@ version: v1
 
 # ATLAS group overlay — compose with:  --defaults atlas[::gcc15]
 #
-# defaults-release.sh already declares the ATLAS CVMFS layout and the lcg.bits
-# provider (overrides: lcg.bits: tag: "%(release)s"). This overlay adds only the
-# ATLAS-specific policy: the LCG line to build against, the platform/postfix the
-# AthenaExternals find_package(LCG 110 EXACT) keys off, and the LCG_110 "_ATLAS_5"
-# flavour deltas (lcgcmake heptools-110_ATLAS_5.cmake) applied on top of the base
-# LCG_110 branch of lcg.bits.
+# Adds only ATLAS-specific policy on top of the shared stacks.bits defaults: the
+# LCG line to build against, the lcg.bits branch selection, and the LCG_110
+# "_ATLAS_5" flavour deltas (lcgcmake heptools-110_ATLAS_5.cmake). The
+# platform/postfix that find_package(LCG 110 EXACT) keys off are NOT set here —
+# they live on the lcg-view / atlasexternals recipes that consume them, so they
+# never enter the shared defaults-release hash and every unpinned LCG external
+# stays reusable across stacks and ATLAS builds.
   
 requires:
   - stacks.bits
@@ -18,20 +19,23 @@ variables:
   # athena/Projects/Athena/build_externals.sh pins (LCG_VERSION_NUMBER=110).
   release: "LCG_110"
 
-overrides:
-  lcg.bits:
-    tag: "%(release)s"
-
-env:
-  # The manifest the lcg-view package emits is named LCG_externals_<platform>.txt;
-  # this must equal ATLAS's BINARY_TAG. TODO(verify): derive from the bits arch.
-  LCG_PLATFORM: "x86_64-el9-gcc15-opt"
-  # find_package(LCG 110 EXACT) looks for dir LCG_110<postfix> under
-  # $LCG_RELEASE_BASE. build_externals.sh also passes this as -DLCG_VERSION_POSTFIX.
-  LCG_VERSION_POSTFIX: "_ATLAS_5"
+# ATLAS CVMFS namespace + layout (system: is NOT hashed, so it never affects
+# artifact reuse). Kept here so atlas.bits can drop its own defaults-release.sh
+# and inherit the shared build env + package_family from stacks.bits, while
+# still publishing into the ATLAS tree with ATLAS's path templates.
+system:
+  prefix:                     "/cvmfs/bits.cern.ch/atlas"
+  cvmfs_user_prefix:          "{prefix}/user"
+  cvmfs_releases_template:    "{prefix}/{release}/{family}{pkg}/{tag}/{platform}"
+  cvmfs_modules_template:     "{prefix}/{release}/{platform}/Modules/modulefiles/{pkg}"
+  cvmfs_shared_path_template: "{prefix}/{release}/noarch/{pkg}/{tag}"
 
 # ===== LCG_110 _ATLAS_5 externals deltas (base lcg.bits LCG_110 + these) =====
 overrides:
+  # Build lcg.bits at the LCG_110 branch (via the release variable above).
+  lcg.bits:
+    tag: "%(release)s"
+
   # Straight version pins (recipe present, no patch coupling):
   compilebox:
     version: "08.14"
