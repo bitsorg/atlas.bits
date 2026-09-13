@@ -14,14 +14,4 @@ env:
   MACOSX_DEPLOYMENT_TARGET: '14.0'
   ENABLE_IPO: 'OFF'
 
-variables:
-  release: main
-
-requires:
-  - lcg.bits
-
-overrides:
-  lcg.bits:
-    tag: "%(release)s"
-
 ---

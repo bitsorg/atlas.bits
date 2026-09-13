@@ -9,10 +9,18 @@ version: v1
 # AthenaExternals find_package(LCG 110 EXACT) keys off, and the LCG_110 "_ATLAS_5"
 # flavour deltas (lcgcmake heptools-110_ATLAS_5.cmake) applied on top of the base
 # LCG_110 branch of lcg.bits.
+  
+requires:
+  - stacks.bits
+
 variables:
   # Selects the lcg.bits recipe branch. Must exist in lcg.bits and match what
   # athena/Projects/Athena/build_externals.sh pins (LCG_VERSION_NUMBER=110).
   release: "LCG_110"
+
+overrides:
+  lcg.bits:
+    tag: "%(release)s"
 
 env:
   # The manifest the lcg-view package emits is named LCG_externals_<platform>.txt;
