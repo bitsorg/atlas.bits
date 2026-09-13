@@ -1,9 +1,10 @@
 package: atlasexternals
 description: ATLAS AthenaExternals project, built from athena's own build_externals.sh on an lcg.bits LCG base.
-version: "2.1.89"       # AthenaExternalsVersion, athena/Projects/Athena/externals.txt
+version: "2.1.90"       # AthenaExternalsVersion, athena/Projects/Athena/externals.txt
                         # TODO(scoped option 3): read from externals.txt to avoid drift.
-tag: "%(version)s"      # NB: the athena source tag (below) is what actually
-                        # carries build_externals.sh + externals.txt.
+tag: "main"             # athena branch carrying build_externals.sh + externals.txt;
+                        # main's externals.txt currently sets AthenaExternalsVersion = 2.1.90,
+                        # which build_externals.sh uses to clone atlasexternals (tracks main; re-sync when it moves).
 source: https://gitlab.cern.ch/atlas/athena   # carries Projects/Athena/build_externals.sh
 requires:
   - lcg-view            # provides $LCG_RELEASE_BASE + the LCG_110_ATLAS_5 manifest
@@ -17,7 +18,7 @@ env:
   # build_externals.sh reads LCG_PLATFORM and passes -DLCG_VERSION_POSTFIX. Kept
   # on this ATLAS-only recipe, not in shared defaults, so the reusable LCG
   # externals keep stacks-identical hashes.
-  LCG_PLATFORM: "x86_64-el9-gcc15-opt"
+  LCG_PLATFORM: "x86_64-el9-gcc14-opt"
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 system:
   # off = network ALLOWED (sandbox_network is "is the restriction on?"; default
