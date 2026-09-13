@@ -28,7 +28,7 @@ MODULE_OPTIONS="--bin --lib --cmake --python"
 # Plain top-level statements (bits sources the recipe; no Run() indirection),
 # ending with MakeModule so Athena is a normal bits package (bits enter Athena/latest).
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?}"
-export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-ubuntu2510-gcc15-opt}"
+export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
 # athena's find_package(AthenaExternals). TODO(verify): exact var name.
 export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 "$SOURCEDIR/Projects/Athena/build.sh" -acmi

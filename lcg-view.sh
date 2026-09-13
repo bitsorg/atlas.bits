@@ -18,7 +18,7 @@ env:
   # Platform/postfix name the emitted manifest (LCG_externals_<platform>.txt and
   # the LCG_110<postfix> dir). Kept on this ATLAS-only recipe, NOT in shared
   # defaults, so they do not invalidate the reusable LCG externals' hashes.
-  LCG_PLATFORM: "x86_64-ubuntu2510-gcc15-opt"
+  LCG_PLATFORM: "x86_64-el9-gcc14-opt"
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 ---
 #!/bin/bash -e
@@ -35,7 +35,7 @@ MODULE_OPTIONS="--none"   # manifest-only; the modulefile exists solely to carry
 # so NO symlink farm and NO cmake files are needed from us (AtlasLCG ships
 # LCGConfig + all Find<Foo>.cmake modules and keys off <FOO>_LCGROOT).
 relnum="110"; postfix="_ATLAS_5"
-plat="${LCG_PLATFORM:-x86_64-ubuntu2510-gcc15-opt}"
+plat="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
 # `bits lcg-view` scans the built LCG closure and writes the manifest straight
 # into $INSTALLROOT/LCG_${relnum}${postfix}/... (so lcg-view installs directly).
 bits lcg-view \
