@@ -19,16 +19,23 @@ system:
 ---
 #!/bin/bash -e
 ##############################
+. $(bits-include ModuleRecipe)
+##############################
 MODULE_OPTIONS="--bin --lib --cmake --python"
 ##############################
 # Build Athena exactly as an ATLAS developer would: run athena's own
 # Projects/Athena/build.sh, UNCHANGED, against the AthenaExternals bits built.
-function Build() {
-  export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?}"
-  export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc15-opt}"
-  # Point the build at the AthenaExternals install. TODO: confirm the variable
-  # AthenaExternals' find_package uses (ATLAS_EXT_DIR / CMAKE_PREFIX_PATH) and
-  # set it from $ATLASEXTERNALS_ROOT (bits root var for the atlasexternals pkg).
-  export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
-  "$SOURCEDIR/Projects/Athena/build.sh" -acmi
-}
+# Plain top-level statements (bits sources the recipe; no Run() indirection),
+# ending with MakeModule so Athena is a normal bits package (bits enter Athena/latest).
+export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?}"
+export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# athena's find_package(AthenaExternals). TODO(verify): exact var name.
+export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
+"$SOURCEDIR/Projects/Athena/build.sh" -acmi
+# Route the produced InstallArea platform subtree into $INSTALLROOT so bits
+# captures it and `bits enter Athena/latest` works like any other package.
+# TODO(verify on build host): build dir + platform subdir + flatten-vs-preserve.
+_ia=$(find "$SOURCEDIR/.." -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
+[ -n "$_ia" ] || { echo "ERROR: Athena InstallArea not found after build.sh" >&2; exit 1; }
+rsync -a "$_ia"/*/ "$INSTALLROOT"/
+MakeModule

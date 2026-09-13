@@ -18,12 +18,14 @@ env:
   # Platform/postfix name the emitted manifest (LCG_externals_<platform>.txt and
   # the LCG_110<postfix> dir). Kept on this ATLAS-only recipe, NOT in shared
   # defaults, so they do not invalidate the reusable LCG externals' hashes.
-  LCG_PLATFORM: "x86_64-el9-gcc15-opt"
+  LCG_PLATFORM: "x86_64-el9-gcc14-opt"
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 ---
 #!/bin/bash -e
 ##############################
-MODULE_OPTIONS="--none"    # installs a manifest (data), no bin/lib
+. $(bits-include ModuleRecipe)
+##############################
+MODULE_OPTIONS="--none"   # manifest-only; the modulefile exists solely to carry env: to dependents
 ##############################
 # LCGConfig.cmake (atlasexternals/Build/AtlasLCG) expects, under
 # $LCG_RELEASE_BASE:
@@ -32,20 +34,24 @@ MODULE_OPTIONS="--none"    # installs a manifest (data), no bin/lib
 # Field 4 (dir) may be ABSOLUTE -> point straight at the bits install prefixes,
 # so NO symlink farm and NO cmake files are needed from us (AtlasLCG ships
 # LCGConfig + all Find<Foo>.cmake modules and keys off <FOO>_LCGROOT).
-function Build() {
-  local relnum="110" postfix="_ATLAS_5"
-  local plat="${LCG_PLATFORM:-x86_64-el9-gcc15-opt}"
-  # `bits lcg-view` scans the built LCG closure in the work dir (each package's
-  # .meta.json) and writes $INSTALLROOT/LCG_${relnum}${postfix}/LCG_externals_<plat>.txt
-  # (+ generators). $LCG_VIEW_ROOT (=$INSTALLROOT) is then exported as
-  # LCG_RELEASE_BASE (see frontmatter), so find_package(LCG) resolves here.
-  # TODO(verify on build host): the work dir + arch to pass from inside a recipe
-  # build. $ARCHITECTURE is the bits arch; the work dir is the build work dir.
-  bits lcg-view \
+relnum="110"; postfix="_ATLAS_5"
+plat="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# `bits lcg-view` scans the built LCG closure and writes the manifest straight
+# into $INSTALLROOT/LCG_${relnum}${postfix}/... (so lcg-view installs directly).
+bits lcg-view \
     --architecture "$ARCHITECTURE" \
     --work-dir "${WORK_DIR:-${BITS_WORK_DIR:-$PWD}}" \
     --platform "$plat" \
     --version-number "$relnum" \
     --postfix "$postfix" \
     --out "$INSTALLROOT"
-}
+# The modulefile is the ONLY channel that carries this package's env to its
+# dependents (default init.sh-from-modules mode). GenerateModule does not emit
+# env:, so write the LCG-view vars here. \$PKG_ROOT (Tcl, set by GenerateModule)
+# is the deployed prefix = LCG_RELEASE_BASE.
+MakeModule
+cat >> "$MODULEFILE" <<EOF
+setenv LCG_RELEASE_BASE     \$PKG_ROOT
+setenv LCG_PLATFORM         $plat
+setenv LCG_VERSION_POSTFIX  $postfix
+EOF

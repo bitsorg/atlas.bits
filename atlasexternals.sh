@@ -30,17 +30,29 @@ system:
 ---
 #!/bin/bash -e
 ##############################
-MODULE_OPTIONS="--bin --lib --cmake"
+. $(bits-include ModuleRecipe)
+##############################
+MODULE_OPTIONS="--lib --cmake"   # expose AthenaExternals libs + CMake config to athena
 ##############################
 # Build AthenaExternals exactly as an ATLAS developer would: run athena's own
 # Projects/Athena/build_externals.sh, UNCHANGED. bits supplies the LCG base
 # (via lcg-view -> LCG_RELEASE_BASE) and the toolchain; ATLAS's script pins
 # atlasexternals (externals.txt) + Gaudi/acts/GeoModel/vecmem + LCG 110.
-function Build() {
-  export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
-  export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc15-opt}"
-  # -c disables RPM packaging. build_externals.sh writes build/ + install/
-  # beside the source. TODO: confirm its dir flags and route the install tree
-  # into $INSTALLROOT so bits captures it as this package's artifact.
-  "$SOURCEDIR/Projects/Athena/build_externals.sh" -c
-}
+export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
+export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# -c disables RPM packaging.
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c
+# Route the produced InstallArea platform subtree into $INSTALLROOT so bits
+# captures it as this package. build_project.sh installs to
+# <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
+# TODO(verify on build host): confirm the build dir + that flattening the
+# platform subtree (vs preserving InstallArea/) is what athena expects.
+_ia=$(find "$SOURCEDIR/.." -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
+[ -n "$_ia" ] || { echo "ERROR: AthenaExternals InstallArea not found after build_externals.sh" >&2; exit 1; }
+rsync -a "$_ia"/*/ "$INSTALLROOT"/
+# Carry the AthenaExternals env down to athena's find_package(AthenaExternals).
+# TODO(verify): the exact var athena reads (ATLAS_EXT_DIR vs CMAKE_PREFIX_PATH).
+MakeModule
+cat >> "$MODULEFILE" <<EOF
+setenv ATLAS_EXT_DIR  \$PKG_ROOT
+EOF
