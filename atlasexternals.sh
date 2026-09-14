@@ -62,12 +62,14 @@ _bdir="$PWD/build"
 # instead of PyModulesBuild, leaving copy_directory's source empty. Findpip uses
 # PIP_LCGROOT (not PIP_ROOT), so dropping PIP_ROOT is safe for pip discovery.
 unset PIP_ROOT
-# AthenaExternals hardcodes ATLAS_BUILD_CORAL/COOL=OFF (expects them from an
-# ATLAS-flavoured LCG). Base LCG 110 / lcgcmake no longer ship CORAL/COOL, so
-# build them here from External/CORAL+COOL (lcgcoral/lcgcool), as the sibling
-# AthAnalysis/AthGeneration/AthSimulation externals projects do. Deps (XercesC,
-# SQLite3, Frontier_Client, Boost) are already in the LCG view.
-"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON" -k "-j1"
+# Build the legacy CORAL/COOL conditions stack here: AthenaExternals hardcodes
+# ATLAS_BUILD_CORAL/COOL=OFF (expects them from an ATLAS-flavoured LCG), but base
+# LCG 110 no longer ships them. CORAL unconditionally builds an OracleAccess
+# plugin needing Oracle Instant Client (not redistributable; the bits oracle pkg
+# is an empty stub), so strip that one subdir via ATLAS_CORAL_PATCH. Athena uses
+# only CORAL RelationalAccess + the SQLite/Frontier backends, not OracleAccess.
+# NB: the patch value must stay space-free so it survives -x -> cmake -D word-splitting.
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON -DATLAS_CORAL_PATCH=PATCH_COMMAND;sed;-i;s/OracleAccess//g;CMakeLists.txt" -k "-j1"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
