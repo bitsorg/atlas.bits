@@ -8,11 +8,13 @@ tag: "main"             # athena branch carrying build_externals.sh + externals.
 source: https://gitlab.cern.ch/atlas/athena   # carries Projects/Athena/build_externals.sh
 requires:
   - lcg-view            # provides $LCG_RELEASE_BASE + the LCG_110_ATLAS_5 manifest
+  - Python              # runtime dep: AthenaExternals links libpython (Gaudi, GaudiPython,
+                        # confdb2 merge). Must be in the runtime closure so its lib is on
+                        # LD_LIBRARY_PATH and the interpreter binds bits libpython, not host.
 build_requires:
   - bits-recipe-tools
   - CMake
   - ninja
-  - Python
   - "GCC-Toolchain:(?!osx)"
 env:
   # build_externals.sh reads LCG_PLATFORM and passes -DLCG_VERSION_POSTFIX. Kept
