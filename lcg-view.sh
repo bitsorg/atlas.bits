@@ -38,7 +38,7 @@ relnum="110"; postfix="_ATLAS_5"
 plat="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
 # `bits lcg-view` scans the built LCG closure and writes the manifest straight
 # into $INSTALLROOT/LCG_${relnum}${postfix}/... (so lcg-view installs directly).
-bits lcg-view \
+"${BITS_SCRIPT_DIR:?}/bits" lcg-view \
     --architecture "$ARCHITECTURE" \
     --work-dir "${WORK_DIR:-${BITS_WORK_DIR:-$PWD}}" \
     --platform "$plat" \
