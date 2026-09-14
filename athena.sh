@@ -1,8 +1,9 @@
 package: Athena
 description: ATLAS Athena framework, built from athena's own build.sh on top of the AthenaExternals bits package.
-version: "25.0.72"      # athena/Projects/Athena/version.txt
-                        # TODO(scoped option 3): read from version.txt to avoid drift.
-tag: "release/%(version)s"   # TODO: confirm the athena tag naming for this release.
+version: "25.0.70"      # newest tagged athena release predating the chai/CrestApi
+                        # dependency (entered at 25.0.71, Sep 2026). 25.0.70 pins
+                        # AthenaExternalsVersion 2.1.86; builds on our 2.1.90 externals.
+tag: "release/%(version)s"   # -> release/25.0.70 (confirmed tag).
 source: https://gitlab.cern.ch/atlas/athena
 requires:
   - atlasexternals      # pulls lcg-view + lcg.bits transitively
