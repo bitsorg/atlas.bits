@@ -39,7 +39,9 @@ export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 # default ../build (under SOURCES) fails. -b redirects checkout/build/
 # install here; the InstallArea search below follows it.
 _bdir="$PWD/build"
-"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir"
+# Ninja generator + bounded -j: build.sh otherwise defaults to serial Make (no -j).
+# ninja is in build_requires; -x/-k pass through $@ to build_project.sh (-- to tool).
+"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja" -k "-j${JOBS:-$(nproc)}"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it and `bits enter Athena/latest` works like any other package.
 # TODO(verify on build host): build dir + platform subdir + flatten-vs-preserve.

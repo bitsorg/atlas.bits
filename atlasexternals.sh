@@ -49,7 +49,10 @@ export LC_ALL=C.UTF-8
 # default ../build (under SOURCES) fails. -b redirects checkout/build/
 # install here; the InstallArea search below follows it.
 _bdir="$PWD/build"
-"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir"
+# -c marks this a CI build, which suppresses the script's default make-tool args,
+# so nothing passes -j and the externals build runs serially. Pass -j explicitly
+# (-k appends to the make tool); GNU make shares it across the ExternalProjects.
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j${JOBS:-$(nproc)}"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
