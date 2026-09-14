@@ -55,7 +55,7 @@ _bdir="$PWD/build"
 # runs `cmake -E copy_directory <pkg> <shared platform dir>`, which is NOT concurrency-
 # safe — flake8_atlas/PyModules race under -j. Each external's own compile still
 # self-parallelizes (its own ninja, all cores), so the compile speedup is kept.
-"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j1"
+bash -vx "$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j1" -k "-v" -i
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
