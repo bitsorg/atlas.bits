@@ -31,11 +31,15 @@ export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?}"
 export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
 # athena's find_package(AthenaExternals). TODO(verify): exact var name.
 export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
-"$SOURCEDIR/Projects/Athena/build.sh" -acmi
+# Build in a writable dir — bits mounts SOURCES read-only, so ATLAS's
+# default ../build (under SOURCES) fails. -b redirects checkout/build/
+# install here; the InstallArea search below follows it.
+_bdir="$PWD/build"
+"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it and `bits enter Athena/latest` works like any other package.
 # TODO(verify on build host): build dir + platform subdir + flatten-vs-preserve.
-_ia=$(find "$SOURCEDIR/.." -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
+_ia=$(find "$_bdir/install" -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
 [ -n "$_ia" ] || { echo "ERROR: Athena InstallArea not found after build.sh" >&2; exit 1; }
 rsync -a "$_ia"/*/ "$INSTALLROOT"/
 MakeModule

@@ -41,13 +41,17 @@ MODULE_OPTIONS="--lib --cmake"   # expose AthenaExternals libs + CMake config to
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
 export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
 # -c disables RPM packaging.
-"$SOURCEDIR/Projects/Athena/build_externals.sh" -c
+# Build in a writable dir — bits mounts SOURCES read-only, so ATLAS's
+# default ../build (under SOURCES) fails. -b redirects checkout/build/
+# install here; the InstallArea search below follows it.
+_bdir="$PWD/build"
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
 # TODO(verify on build host): confirm the build dir + that flattening the
 # platform subtree (vs preserving InstallArea/) is what athena expects.
-_ia=$(find "$SOURCEDIR/.." -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
+_ia=$(find "$_bdir/install" -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
 [ -n "$_ia" ] || { echo "ERROR: AthenaExternals InstallArea not found after build_externals.sh" >&2; exit 1; }
 rsync -a "$_ia"/*/ "$INSTALLROOT"/
 # Carry the AthenaExternals env down to athena's find_package(AthenaExternals).
