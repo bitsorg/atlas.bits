@@ -40,6 +40,10 @@ MODULE_OPTIONS="--lib --cmake"   # expose AthenaExternals libs + CMake config to
 # atlasexternals (externals.txt) + Gaudi/acts/GeoModel/vecmem + LCG 110.
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
 export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# el9 build image ships only C.UTF-8; ATLAS build_project_externals.sh otherwise
+# forces en_US.UTF-8 (unset/"C"), and every /bin/sh warns. Pin C.UTF-8 as CI does.
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
 # -c disables RPM packaging.
 # Build in a writable dir — bits mounts SOURCES read-only, so ATLAS's
 # default ../build (under SOURCES) fails. -b redirects checkout/build/

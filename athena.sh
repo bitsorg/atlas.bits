@@ -29,6 +29,10 @@ MODULE_OPTIONS="--bin --lib --cmake --python"
 # ending with MakeModule so Athena is a normal bits package (bits enter Athena/latest).
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?}"
 export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# el9 build image ships only C.UTF-8; ATLAS build_project_externals.sh otherwise
+# forces en_US.UTF-8 (unset/"C"), and every /bin/sh warns. Pin C.UTF-8 as CI does.
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
 # athena's find_package(AthenaExternals). TODO(verify): exact var name.
 export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 # Build in a writable dir — bits mounts SOURCES read-only, so ATLAS's
