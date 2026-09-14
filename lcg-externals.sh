@@ -58,6 +58,7 @@ requires:
   - RELAX
   - scikitlearn
   - sqlalchemy
+  - sqlite
   - sqlparse
   - stomppy
   - swig
