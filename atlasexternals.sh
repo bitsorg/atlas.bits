@@ -49,10 +49,11 @@ export LC_ALL=C.UTF-8
 # default ../build (under SOURCES) fails. -b redirects checkout/build/
 # install here; the InstallArea search below follows it.
 _bdir="$PWD/build"
-# -c marks this a CI build, which suppresses the script's default make-tool args,
-# so nothing passes -j and the externals build runs serially. Pass -j explicitly
-# (-k appends to the make tool); GNU make shares it across the ExternalProjects.
-"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j${JOBS:-$(nproc)}"
+# Keep Ninja, but drive the SUPERBUILD serially (-j1): each ExternalProject's install
+# runs `cmake -E copy_directory <pkg> <shared platform dir>`, which is NOT concurrency-
+# safe — flake8_atlas/PyModules race under -j. Each external's own compile still
+# self-parallelizes (its own ninja, all cores), so the compile speedup is kept.
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j1"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
