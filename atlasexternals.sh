@@ -55,7 +55,14 @@ _bdir="$PWD/build"
 # runs `cmake -E copy_directory <pkg> <shared platform dir>`, which is NOT concurrency-
 # safe — flake8_atlas/PyModules race under -j. Each external's own compile still
 # self-parallelizes (its own ninja, all cores), so the compile speedup is kept.
-bash -vx "$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j1" -k "-v" -i
+# The bits pip package exports PIP_ROOT (bits' generic <PKG>_ROOT convention).
+# pip also reads PIP_ROOT as its own --root install option (PIP_<OPT> env mapping),
+# so PyModules' `pip install --user` gets --root=<pip pkg prefix>; change_root then
+# prepends that prefix to PYTHONUSERBASE and the wheels land in pip's own tree
+# instead of PyModulesBuild, leaving copy_directory's source empty. Findpip uses
+# PIP_LCGROOT (not PIP_ROOT), so dropping PIP_ROOT is safe for pip discovery.
+unset PIP_ROOT
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja" -k "-j1"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.

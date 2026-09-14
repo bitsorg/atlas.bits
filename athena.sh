@@ -41,6 +41,10 @@ export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 _bdir="$PWD/build"
 # Ninja generator + bounded -j: build.sh otherwise defaults to serial Make (no -j).
 # ninja is in build_requires; -x/-k pass through $@ to build_project.sh (-- to tool).
+# Drop PIP_ROOT: the bits pip pkg exports it (<PKG>_ROOT convention), but pip reads
+# PIP_ROOT as its --root option, redirecting any `pip install --user` into pip's own
+# tree. Findpip uses PIP_LCGROOT, so this is safe. (Same fix as atlasexternals.sh.)
+unset PIP_ROOT
 "$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja" -k "-j${JOBS:-$(nproc)}"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it and `bits enter Athena/latest` works like any other package.
