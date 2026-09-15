@@ -46,7 +46,9 @@ _bdir="$PWD/build"
 # PIP_ROOT as its --root option, redirecting any `pip install --user` into pip's own
 # tree. Findpip uses PIP_LCGROOT, so this is safe. (Same fix as atlasexternals.sh.)
 unset PIP_ROOT
-"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja" -k "-j${JOBS:-$(nproc)}"
+# -Wno-dev silences ~1900 CMP0144 developer warnings (bits sets <PKG>_ROOT env
+# vars; CMake 3.30 warns it ignores the upper-case form). Pure noise, not errors.
+"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja -Wno-dev" -k "-j${JOBS:-$(nproc)}"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it and `bits enter Athena/latest` works like any other package.
 # TODO(verify on build host): build dir + platform subdir + flatten-vs-preserve.
