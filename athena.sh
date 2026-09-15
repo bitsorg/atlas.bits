@@ -81,7 +81,10 @@ cat > "$_afilter" <<'FILTER'
 + Control/AthenaExamples/AthExHelloWorld
 - .*
 FILTER
-"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja -Wno-dev -DATLAS_PACKAGE_FILTER_FILE=$_afilter" -k "-j${JOBS:-$(nproc)}"
+# Force C++23: athena 25.0.70 uses std::print (C++23), but AtlasCompilerSettings
+# only auto-selects C++23 for GCC>=15 -- our GCC-Toolchain is 14.2 (gcc14 defaults),
+# whose libstdc++ still provides <print>. Faithful alternative: build with gcc15.
+"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja -Wno-dev -DCMAKE_CXX_STANDARD=23 -DATLAS_PACKAGE_FILTER_FILE=$_afilter" -k "-j${JOBS:-$(nproc)}"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it and `bits enter Athena/latest` works like any other package.
 # TODO(verify on build host): build dir + platform subdir + flatten-vs-preserve.
