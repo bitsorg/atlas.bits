@@ -7,7 +7,7 @@ tag: "release/%(version)s"   # -> release/25.0.70 (confirmed tag).
 source: https://gitlab.cern.ch/atlas/athena
 requires:
   - atlasexternals      # pulls lcg-view + lcg.bits transitively
-  - heppdt              # HepPDT: VP1 graphics find_package(HepPDT)
+  - HepPDT              # HepPDT: VP1 graphics find_package(HepPDT)
   - gperftools          # tcmalloc/profiler: find_package(gperftools)
 build_requires:
   - bits-recipe-tools
@@ -70,6 +70,7 @@ cat > "$_afilter" <<'FILTER'
 + Control/SGCore
 + Control/StoreGate
 + Control/AthenaBaseComps
++ Control/CLIDComps
 + Database/PersistentDataModel
 + Control/AthenaExamples/AthExHelloWorld
 - .*
