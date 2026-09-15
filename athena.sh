@@ -65,13 +65,19 @@ cat > "$_afilter" <<'FILTER'
 + Control/AthContainersInterfaces
 + Control/AthContainers
 + Control/AthAllocators
++ Control/AthLinks
 + Control/AthenaKernel
++ Control/DataModelRoot
++ Control/RootUtils
++ Control/xAODRootAccessInterfaces
 + Control/SGTools
 + Control/SGCore
 + Control/StoreGate
 + Control/AthenaBaseComps
 + Control/CLIDComps
 + Database/PersistentDataModel
++ Event/xAOD/xAODCore
++ Event/xAOD/xAODEventInfo
 + Control/AthenaExamples/AthExHelloWorld
 - .*
 FILTER

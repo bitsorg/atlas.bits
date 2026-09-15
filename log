@@ -1,0 +1,255 @@
++ set -e
++ set -x
++ source /container/bits/sw/SPECS/x86_64-el9/Athena/25.0.70-local1/Athena.sh
++++ bits-include ModuleRecipe
+++ . /container/bits/sw/x86_64-el9/bits-recipe-tools/0.0.32-local2/ModuleRecipe
++++ MODULEDIR=/container/bits/sw/INSTALLROOT/30ca8cac71f209d8e465599beaef2ba4b9bced21/x86_64-el9/Athena/25.0.70-local1/etc/modulefiles
++++ MODULEFILE=/container/bits/sw/INSTALLROOT/30ca8cac71f209d8e465599beaef2ba4b9bced21/x86_64-el9/Athena/25.0.70-local1/etc/modulefiles/Athena
++++ MODULE_OPTIONS='--bin --lib'
+++ MODULE_OPTIONS='--bin --lib --cmake --python'
+++ export LCG_RELEASE_BASE=/container/bits/sw/x86_64-el9/lcg-view/1-local9
+++ LCG_RELEASE_BASE=/container/bits/sw/x86_64-el9/lcg-view/1-local9
+++ export LCG_PLATFORM=x86_64-el9-gcc14-opt
+++ LCG_PLATFORM=x86_64-el9-gcc14-opt
+++ export LANG=C.UTF-8
+++ LANG=C.UTF-8
+++ export LC_ALL=C.UTF-8
+++ LC_ALL=C.UTF-8
+++ export ATLAS_EXT_DIR=/container/bits/sw/x86_64-el9/atlasexternals/2.1.90-local6
+++ ATLAS_EXT_DIR=/container/bits/sw/x86_64-el9/atlasexternals/2.1.90-local6
+++ _bdir=/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build
+++ unset PIP_ROOT
+++ _afilter=/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/athena-package-filters.txt
+++ cat
+++ /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena/build.sh -acmi -b /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build -x '-G Ninja -Wno-dev -DATLAS_PACKAGE_FILTER_FILE=/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/athena-package-filters.txt' -k -j24
+Leaving LCG_RELEASE_BASE = /container/bits/sw/x86_64-el9/lcg-view/1-local9
+Set TDAQ_RELEASE_BASE = /cvmfs/atlas.cern.ch/repo/sw/tdaq
+Warning: Didn't find AthenaExternals under /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/install/AthenaExternals/25.0.70/InstallArea
+         (Hopefully this is intentional and you have done e.g. asetup AthenaExternals,main,latest)
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- The Fortran compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /container/bits/sw/x86_64-el9/GCC-Toolchain/v14.2.0-alice2-local2/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /container/bits/sw/x86_64-el9/GCC-Toolchain/v14.2.0-alice2-local2/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting Fortran compiler ABI info
+-- Detecting Fortran compiler ABI info - done
+-- Check for working Fortran compiler: /container/bits/sw/x86_64-el9/GCC-Toolchain/v14.2.0-alice2-local2/bin/gfortran - skipped
+-- Found AthenaExternals: /container/bits/sw/x86_64-el9/atlasexternals/2.1.90-local6/cmake/AthenaExternalsConfig.cmake (found version "25.0.73")
+-- Setting ATLAS specific build flags
+-- checker_gccplugins library not found
+-- Enabling Python code checker: /container/bits/sw/x86_64-el9/atlasexternals/2.1.90-local6/bin/flake8_atlas
+-- Setting up LCG release "LCG_110_ATLAS_5" for platform: x86_64-el9-gcc14-opt
+-- Setting up LCG release using: /container/bits/sw/x86_64-el9/lcg-view/1-local9/LCG_110_ATLAS_5/LCG_externals_x86_64-el9-gcc14-opt.txt
+-- Setting up LCG release using: /container/bits/sw/x86_64-el9/lcg-view/1-local9/LCG_110_ATLAS_5/LCG_generators_x86_64-el9-gcc14-opt.txt
+-- Found TBB: /container/bits/sw/x86_64-el9/tbb/v2021.5.0-local2 (found version "2021.5")
+-- Found cppgsl: /container/bits/sw/x86_64-el9/cppgsl/4.2.0-local2/include
+-- Could NOT find AIDA (missing: AIDA_INCLUDE_DIR) 
+-- Found HepPDT: /container/bits/sw/x86_64-el9/HepPDT/2.06.01-local1/include
+-- Found CppUnit: /container/bits/sw/x86_64-el9/CppUnit/1.15.1-local3/include
+-- Found libunwind: /container/bits/sw/x86_64-el9/libunwind/1.5.0-local3/include
+-- Found VDT: /container/bits/sw/x86_64-el9/vdt/0.4.4-local2/include
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Found Python: /container/bits/sw/x86_64-el9/Python/3.13.11-local3/bin/python3.13 (found suitable version "3.13.11", minimum required is "3.7") found components: Interpreter Development Development.Module Development.Embed
+-- Found Vdt: /container/bits/sw/x86_64-el9/vdt/0.4.4-local2/include (found version "0.4")
+-- Found ROOT: /container/bits/sw/x86_64-el9/ROOT/v6.40.02-local2/cmake (found version 6.40.02)
+-- Found UUID: /usr/include
+--   Import target: UUID::uuid
+-- Found ZLIB: /usr/lib64/libz.so (found suitable version "1.2.11", minimum required is "1.2.11")
+-- Found Rangev3: /container/bits/sw/x86_64-el9/rangev3/0.12.0-local2/include
+--   Import target: Rangev3::rangev3
+-- Found nlohmann_json: /container/bits/sw/x86_64-el9/jsonmcpp/3.12.0-local2/share/cmake/nlohmann_json/nlohmann_jsonConfig.cmake (found version "3.12.0")
+-- Found XercesC: /container/bits/sw/x86_64-el9/XercesC/3.3.0-local2/lib/libxerces-c.so (found version "3.3.0")
+-- Found Gaudi: /container/bits/sw/x86_64-el9/atlasexternals/2.1.90-local6/lib/cmake/Gaudi (found version 40.4)
+-- Could NOT find tdaq-common (missing: TDAQ-COMMON_INCLUDE_DIR TDAQ-COMMON_LIBRARIES) 
+-- Found attrs: /container/bits/sw/x86_64-el9/attrs/25.1.0-local2/lib/python3.13/site-packages
+-- Found pydantic: /container/bits/sw/x86_64-el9/pydantic/2.13.3-local2/lib/python3.13/site-packages
+-- Found python_dateutil: /container/bits/sw/x86_64-el9/python_dateutil/2.9.0.post0-local2/lib/python3.13/site-packages
+-- Found requests: /container/bits/sw/x86_64-el9/requests/2.32.3-local2/lib/python3.13/site-packages
+-- Found typing_extensions: /container/bits/sw/x86_64-el9/typing_extensions/4.15.0-local2/lib/python3.13/site-packages
+-- Found urllib3: /container/bits/sw/x86_64-el9/urllib3/2.7.0-local2/lib/python3.13/site-packages
+-- Could NOT find tdaq (missing: TDAQ_INCLUDE_DIR TDAQ_LIBRARIES) 
+-- Found LibXslt: /container/bits/sw/x86_64-el9/libxslt/v1.1.43-local3/lib/libxslt.so (found version "1.1.43")
+-- Looking for a CUDA compiler
+-- Looking for a CUDA compiler - NOTFOUND
+-- Looking for a HIP compiler
+-- Looking for a HIP compiler - NOTFOUND
+-- Found pcre: /container/bits/sw/x86_64-el9/pcre/8.43-local2/include
+-- Found Cppcheck: /container/bits/sw/x86_64-el9/cppcheck/2.20.0-local2/bin/cppcheck (found suitable version "2.20.0", minimum required is "2.17")
+-- Checking C/C++ files with: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_build_run.sh /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena/../../Control/CxxUtils/scripts/cppcheck_atlas --enable=warning,portability,performance --quiet --inline-suppr --template=gcc --performance-valueflow-max-if-count=50 -D__CPPCHECK__ -DATOMIC_POINTER_LOCK_FREE=2 --library=boost --library=googletest --library=python --library=/container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/CxxUtils/share/cppcheck_athena.cfg --suppressions-list=/container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/CxxUtils/share/cppcheck_suppress.txt --suppress=*:/container/bits/sw/x86_64-el9/lcg-view/1-local9/* --suppress=*:/container/bits/sw/x86_64-el9/atlasexternals/2.1.90-local6/include/*
+-- Found Frontier_Client: /container/bits/sw/x86_64-el9/Frontier_Client/2.10.2-local2/include
+-- Found Doxygen: /container/bits/sw/x86_64-el9/doxygen/1.17.0-local2/bin/doxygen (found version "1.17.0") found components: doxygen dot
+-- Found graphviz: /container/bits/sw/x86_64-el9/graphviz/12.2.1-local2/include
+-- Found ZLIB: /usr/lib64/libz.so (found version "1.2.11")
+-- Found PNG: /container/bits/sw/x86_64-el9/png/1.6.55-local3/lib/libpng.so (found version "1.6.55")
+-- Found TIFF: /container/bits/sw/x86_64-el9/tiff/4.7.1-local2/lib/cmake/tiff (found version "4.7.1")
+-- Found auth_get_sso_cookie: /container/bits/sw/x86_64-el9/auth_get_sso_cookie/2.4.0-1-local2/lib/python3.13/site-packages
+-- Found heaptrack: /container/bits/sw/x86_64-el9/heaptrack/1.5.0-local2/include
+-- Found libffi: /container/bits/sw/x86_64-el9/libffi/3.4.2-local3/include
+-- Found gl2ps: /container/bits/sw/x86_64-el9/gl2ps/1.4.2-local2/include (found version "1.4.2")
+-- Found autopep8: /container/bits/sw/x86_64-el9/autopep8/2.3.1-local2/bin
+-- Saving build logs using: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh
+-- Configuring ATLAS project with name "Athena" and version "25.0.70"
+-- Using build type: Release
+-- Using platform name: x86_64-el9-gcc14-opt
+-- Cleaning stale files from build area
+-- Unit tests will be built by default
+-- Found 1993 package(s)
+-- Considering package 1 / 1993
+-- Package filtering rules read:
+--   + AtlasTest/TestTools
+--   + Control/CxxUtils
+--   + Control/AthContainersInterfaces
+--   + Control/AthContainers
+--   + Control/AthAllocators
+--   + Control/AthenaKernel
+--   + Control/SGTools
+--   + Control/SGCore
+--   + Control/StoreGate
+--   + Control/AthenaBaseComps
+--   + Control/CLIDComps
+--   + Database/PersistentDataModel
+--   + Control/AthenaExamples/AthExHelloWorld
+--   - .*
+-- Configuring the build of package: TestTools
+-- Configuring the build of package: AthAllocators
+-- Configuring the build of package: AthContainers
+-- Configuring the build of package: AthContainersInterfaces
+-- Configuring the build of package: AthenaBaseComps
+-- Configuring the build of package: AthExHelloWorld
+-- Considering package 100 / 1993
+-- Configuring the build of package: AthenaKernel
+-- Found CLHEP: /container/bits/sw/x86_64-el9/clhep/2.4.7.2-local2 (found version "2.4.7.2")
+-- Configuring the build of package: CLIDComps
+-- Configuring the build of package: CxxUtils
+-- Installing: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/share/ubsan.supp
+-- Configuring the build of package: SGCore
+-- Configuring the build of package: SGTools
+-- Configuring the build of package: StoreGate
+-- Configuring the build of package: PersistentDataModel
+-- Could NOT find CORAL (missing: _CORAL_BINARY_PATH) 
+-- Considering package 199 / 1993
+-- Considering package 298 / 1993
+-- Considering package 397 / 1993
+-- Considering package 496 / 1993
+-- Considering package 595 / 1993
+-- Considering package 694 / 1993
+-- Considering package 793 / 1993
+-- Considering package 892 / 1993
+-- Considering package 991 / 1993
+-- Considering package 1090 / 1993
+-- Considering package 1189 / 1993
+-- Considering package 1288 / 1993
+-- Considering package 1387 / 1993
+-- Considering package 1486 / 1993
+-- Considering package 1585 / 1993
+-- Considering package 1684 / 1993
+-- Considering package 1783 / 1993
+-- Considering package 1882 / 1993
+-- Considering package 1981 / 1993
+-- Number of packages configured: 13
+-- Time for package configuration: 1 second(s)
+-- Generated file: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/packages.txt
+-- Including the packages from project AthenaExternals - 25.0.73...
+-- Generated file: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/compilers.txt
+-- Generated file: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/ReleaseData
+-- Generating external environment configuration
+-- Writing runtime environment to file: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/env_setup.sh
+-- Generating external environment configuration
+-- Writing runtime environment to file: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/env_setup_install.sh
+-- Configuring done (8.6s)
+-- Generating done (0.8s)
+Generate graphviz: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/packages.dot
+Reading GraphViz options file: /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena/CMakeGraphVizOptions.cmake
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    ATLAS_ENABLE_CI_TESTS
+
+
+-- Build files have been written to: /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena
+TIMESTAMP::PROJECT_CONFIG:: 10 ::
+[1/872] Generating ../../x86_64-el9-gcc14-opt/include/AthContainersInterfaces
+[2/872] Generating ../../x86_64-el9-gcc14-opt/include/CxxUtils
+[3/872] Generating ../../x86_64-el9-gcc14-opt/include/SGCore
+[4/872] Generating ../../x86_64-el9-gcc14-opt/include/StoreGate
+[5/872] Generating ../../x86_64-el9-gcc14-opt/include/AthAllocators
+[6/872] Generating ../../x86_64-el9-gcc14-opt/include/SGTools
+[7/872] Generating ../../x86_64-el9-gcc14-opt/include/PersistentDataModel
+[8/872] Generating ../../x86_64-el9-gcc14-opt/python/TestTools/logfiles.py
+[9/872] Generating ../../x86_64-el9-gcc14-opt/include/AthenaKernel
+[10/872] Generating ../../x86_64-el9-gcc14-opt/jobOptions/CLIDComps/minimalPrintout.opts
+[11/872] Generating ../../x86_64-el9-gcc14-opt/include/AthContainers
+[12/872] Generating ../../x86_64-el9-gcc14-opt/include/TestTools
+[13/872] Generating ../../x86_64-el9-gcc14-opt/python/TestTools/__init__.py
+[14/872] Generating ../../x86_64-el9-gcc14-opt/include/AthenaBaseComps
+[15/872] Generating AthContainersJaggedVecsDictReflexDict.cxx
+FAILED: [code=1] Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDict.dsomap Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDictReflexDict.cxx x86_64-el9-gcc14-opt/lib/libAthContainersJaggedVecsDict_rdict.pcm /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDict.dsomap /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDictReflexDict.cxx /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib/libAthContainersJaggedVecsDict_rdict.pcm 
+cd /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E make_directory /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_build_run.sh /usr/bin/bash /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/makeAthContainersJaggedVecsDictReflexDict.sh && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersJaggedVecsDictReflexDict.d /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/d/b66a4374dc4e332084b933131c6fe86793e9ac401bf4f1db0367f616e31d81bc.d
+In file included from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/tools/JaggedVecVector.h:19,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/tools/JaggedVecVectorFactory.h:18,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/JaggedVec.h:75,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AthContainersJaggedVecsDict.h:17:
+/container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AuxVectorData.h:22:10: fatal error: AthLinks/DataLink.h: No such file or directory
+   22 | #include "AthLinks/DataLink.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+[16/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/Array.cxx.o
+[17/872] Generating AthContainersAccessorsDictReflexDict.cxx
+FAILED: [code=1] Control/AthContainers/CMakeFiles/AthContainersAccessorsDict.dsomap Control/AthContainers/CMakeFiles/AthContainersAccessorsDictReflexDict.cxx x86_64-el9-gcc14-opt/lib/libAthContainersAccessorsDict_rdict.pcm /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersAccessorsDict.dsomap /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersAccessorsDictReflexDict.cxx /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib/libAthContainersAccessorsDict_rdict.pcm 
+cd /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersAccessorsDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E make_directory /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersAccessorsDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_build_run.sh /usr/bin/bash /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/makeAthContainersAccessorsDictReflexDict.sh && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersAccessorsDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersAccessorsDictReflexDict.d /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/d/f939d00a8781bb7c9bd63b534f0988f9e81f12825129cc4fc78766dbf3ccfc33.d
+In file included from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/ConstAccessor.h:23,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/Accessor.h:23,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AthContainersAccessorsDict.h:17:
+/container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AuxVectorData.h:22:10: fatal error: AthLinks/DataLink.h: No such file or directory
+   22 | #include "AthLinks/DataLink.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+[18/872] Generating AthContainersDictReflexDict.cxx
+FAILED: [code=1] Control/AthContainers/CMakeFiles/AthContainersDict.dsomap Control/AthContainers/CMakeFiles/AthContainersDictReflexDict.cxx x86_64-el9-gcc14-opt/lib/libAthContainersDict_rdict.pcm /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersDict.dsomap /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersDictReflexDict.cxx /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib/libAthContainersDict_rdict.pcm 
+cd /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E make_directory /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_build_run.sh /usr/bin/bash /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/makeAthContainersDictReflexDict.sh && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthContainers/CMakeFiles/AthContainersDictReflexDict.d /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/d/40b17602c9114a6aa55247bd1cd8e3fd83cc0829296dbcef9d2c1d044575bba3.d
+In file included from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/tools/AuxTypeVectorFactory.h:14,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AuxTypeRegistry.h:20,
+                 from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AthContainersDict.h:8:
+/container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthContainers/AthContainers/AuxVectorData.h:22:10: fatal error: AthLinks/DataLink.h: No such file or directory
+   22 | #include "AthLinks/DataLink.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+[19/872] Generating AthenaKernelDictReflexDict.cxx
+FAILED: [code=1] Control/AthenaKernel/CMakeFiles/AthenaKernelDict.dsomap Control/AthenaKernel/CMakeFiles/AthenaKernelDictReflexDict.cxx x86_64-el9-gcc14-opt/lib/libAthenaKernelDict_rdict.pcm /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/AthenaKernelDict.dsomap /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/AthenaKernelDictReflexDict.cxx /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib/libAthenaKernelDict_rdict.pcm 
+cd /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/AthenaKernelDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E make_directory /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/x86_64-el9-gcc14-opt/lib && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/AthenaKernelDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_build_run.sh /usr/bin/bash /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/makeAthenaKernelDictReflexDict.sh && "/container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/atlas_ctest.sh" --launch --target-name TARGET_NAME --build-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel --output /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/AthenaKernelDict.dsomap  --log-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/BuildLogs --binary-dir /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena -- /container/bits/sw/x86_64-el9/CMake/3.30.6-local3/bin/cmake -E cmake_transform_depfile Ninja gccdepfile /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Projects/Athena /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthenaKernel /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/Control/AthenaKernel/CMakeFiles/AthenaKernelDictReflexDict.d /container/bits/sw/BUILD/30ca8cac71f209d8e465599beaef2ba4b9bced21/Athena/build/build/Athena/CMakeFiles/d/c58628f8e704ba4707065cc9bdb0a41ee7ccf485e6786cfead99f4e3bd6499f5.d
+In file included from /container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthenaKernel/AthenaKernel/AthenaKernelDict.h:26:
+/container/bits/sw/SOURCES/Athena/25.0.70/release/25.0.70/Control/AthenaKernel/AthenaKernel/DsoDb.h:21:10: fatal error: DataModelRoot/RootType.h: No such file or directory
+   21 | #include "DataModelRoot/RootType.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+[20/872] Building C object Control/CxxUtils/CMakeFiles/calg.dir/src/libcalg/arraylist.c.o
+[21/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/FPControl.cxx.o
+[22/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/FloatCompressor.cxx.o
+[23/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/MurmurHash2.cxx.o
+[24/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/ArrayScanner.cxx.o
+[25/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/FastReseededPRNG.cxx.o
+[26/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/MD5.cxx.o
+[27/872] Running TestToolsPythonInstall post-command
+[28/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/Compressor.cxx.o
+[29/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/Arrayrep.cxx.o
+[30/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/FloatPacker.cxx.o
+[31/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/ConcurrentBitset.cxx.o
+[32/872] Generating SGCoreDictReflexDict.cxx
+[33/872] Building CXX object Control/CxxUtils/CMakeFiles/CxxUtils.dir/Root/ClassName.cxx.o
+[34/872] Generating AthContainersPackedContainersDictReflexDict.cxx
+[35/872] Generating AthAllocatorsDictReflexDict.cxx
+[36/872] Generating AthContainersPmrDictReflexDict.cxx
+[37/872] Generating SGToolsDictReflexDict.cxx
+[38/872] Generating PersistentDataModelDictReflexDict.cxx
+ninja: build stopped: subcommand failed.
+TIMESTAMP::PROJECT_BUILD:: 6 ::
