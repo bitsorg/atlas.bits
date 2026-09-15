@@ -68,6 +68,8 @@ unset PIP_ROOT
 # plugin needing Oracle Instant Client (not redistributable; the bits oracle pkg
 # is an empty stub), so strip that one subdir via ATLAS_CORAL_PATCH. Athena uses
 # only CORAL RelationalAccess + the SQLite/Frontier backends, not OracleAccess.
+# (`hostname`, which CORAL's build banner calls, is supplied by the build image
+# via bits-containers build-tools, not patched out here.)
 # NB: the patch value must stay space-free so it survives -x -> cmake -D word-splitting.
 "$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON -DATLAS_CORAL_PATCH=PATCH_COMMAND;sed;-i;s/OracleAccess//g;CMakeLists.txt" -k "-j1"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
