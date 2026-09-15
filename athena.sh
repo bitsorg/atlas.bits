@@ -7,6 +7,8 @@ tag: "release/%(version)s"   # -> release/25.0.70 (confirmed tag).
 source: https://gitlab.cern.ch/atlas/athena
 requires:
   - atlasexternals      # pulls lcg-view + lcg.bits transitively
+  - heppdt              # HepPDT: VP1 graphics find_package(HepPDT)
+  - gperftools          # tcmalloc/profiler: find_package(gperftools)
 build_requires:
   - bits-recipe-tools
   - CMake
@@ -48,7 +50,17 @@ _bdir="$PWD/build"
 unset PIP_ROOT
 # -Wno-dev silences ~1900 CMP0144 developer warnings (bits sets <PKG>_ROOT env
 # vars; CMake 3.30 warns it ignores the upper-case form). Pure noise, not errors.
-"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja -Wno-dev" -k "-j${JOBS:-$(nproc)}"
+# DataQuality/DQUtils hard-links ${ORACLE_LIBRARIES} but calls no Oracle/OCI symbols
+# (vestigial link inherited from CoraCool); building it would give libDQUtils.so a
+# runtime libclntsh dependency -> the Oracle client would have to ship on CVMFS,
+# which the OTN licence forbids. Nothing C++-depends on DQUtils (Python-binding
+# leaf), so exclude it -- same spirit as athena's own filter dropping non-core pkgs.
+# We copy athena's real package_filters.txt (readable in SOURCES) and append the
+# exclusion, then point atlas_project at it: no source patch, no drift.
+_afilter="$PWD/athena-package-filters.txt"
+cp "$SOURCEDIR/Projects/Athena/package_filters.txt" "$_afilter"
+printf '\n# bits: Oracle-only DQ tool; drop to keep the Oracle client off CVMFS\n- DataQuality/DQUtils\n' >> "$_afilter"
+"$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" -x "-G Ninja -Wno-dev -DATLAS_PACKAGE_FILTER_FILE=$_afilter" -k "-j${JOBS:-$(nproc)}"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it and `bits enter Athena/latest` works like any other package.
 # TODO(verify on build host): build dir + platform subdir + flatten-vs-preserve.

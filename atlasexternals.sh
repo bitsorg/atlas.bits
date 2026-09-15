@@ -75,7 +75,48 @@ unset PIP_ROOT
 # (`hostname`, which CORAL's build banner calls, is supplied by the build image
 # via bits-containers build-tools, not patched out here.)
 # NB: the patch value must stay space-free so it survives -x -> cmake -D word-splitting.
-"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON -DATLAS_CORAL_PATCH=PATCH_COMMAND;sed;-i;-e;s/OracleAccess//g;-e;\#CORAL_SERVER/#d;CMakeLists.txt" -k "-j1"
+# Enable CrestApi (CREST conditions client) in the AthenaExternals build. It is a
+# whitelist-EXCLUDED package: Projects/AthenaExternals/package_filters.txt lists the
+# built packages and ends in `- .*`, and CrestApi has no ATLAS_BUILD_* flag. atlas_project
+# reads ATLAS_PACKAGE_FILTER_FILE (CACHE FILEPATH, AtlasInternals.cmake), so we point it
+# at an augmented copy of the pinned filter + External/CrestApi. NB: this list mirrors
+# atlasexternals 2.1.90 package_filters.txt -- re-sync if the atlasexternals pin moves.
+_filter="$PWD/athena-package-filters.txt"
+cat > "$_filter" <<'FILTER'
++ External/Acts
++ External/APTypes
++ External/boost-mpi3
++ External/CheckerGccPlugins
++ External/CLHEP
++ External/Coin3D
++ External/COOL
++ External/CORAL
++ External/flake8_atlas
++ External/Gaudi
++ External/GPerfTools
++ External/Geant4
++ External/VecCore
++ External/VecGeom
++ External/GeoModel
++ External/GoogleTest
++ External/lwtnn
++ External/MKL
++ External/onnxruntime
++ External/prmon
++ External/PyModules
++ External/Simage
++ External/SoQt
++ External/dSFMT
++ External/triSYCL
++ External/itksw-endec
++ External/yampl
++ External/nlohmann_json
++ External/VecMem
++ External/Triton
++ External/CrestApi
+- .*
+FILTER
+"$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON -DATLAS_CORAL_PATCH=PATCH_COMMAND;sed;-i;-e;s/OracleAccess//g;-e;\#CORAL_SERVER/#d;CMakeLists.txt -DATLAS_PACKAGE_FILTER_FILE=$_filter" -k "-j1"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
 # <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
