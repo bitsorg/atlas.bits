@@ -36,9 +36,9 @@ MODULE_OPTIONS="--none"   # manifest-only; the modulefile exists solely to carry
 # LCGConfig + all Find<Foo>.cmake modules and keys off <FOO>_LCGROOT).
 relnum="110"; postfix="_ATLAS_5"
 plat="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
-# `bits lcg-view` scans the built LCG closure and writes the manifest straight
+# `bits overlay lcg` scans the built LCG closure and writes the manifest straight
 # into $INSTALLROOT/LCG_${relnum}${postfix}/... (so lcg-view installs directly).
-"${BITS_SCRIPT_DIR:?}/bits" lcg-view \
+"${BITS_SCRIPT_DIR:?}/bits" overlay lcg \
     --architecture "$ARCHITECTURE" \
     --work-dir "${WORK_DIR:-${BITS_WORK_DIR:-$PWD}}" \
     --platform "$plat" \
