@@ -7,7 +7,15 @@
 #     asetup ...        # asetup/find_package now resolve externals + LCG from bits
 #
 # --- where the bits install lives (override BITS_SW for your checkout) -----------
-: "${BITS_SW:=sw}"
+# Resolve this script's own directory so the default sw/ tree is found regardless
+# of the caller's cwd (this file is meant to be sourced).
+if [ -n "${BASH_SOURCE[0]:-}" ]; then
+    _bits_self="${BASH_SOURCE[0]}"
+else
+    _bits_self="${(%):-%x}"   # zsh fallback
+fi
+_bits_selfdir="$(cd "$(dirname "${_bits_self}")" >/dev/null 2>&1 && pwd)"
+: "${BITS_SW:=${_bits_selfdir}/sw}"
 : "${BITS_ARCH:=x86_64-el9}"
 _bits_base="${BITS_SW}/${BITS_ARCH}"
 
@@ -41,4 +49,4 @@ else
     echo "               bits externals/LCG env is set, but asetup/lsetup are unavailable." >&2
 fi
 
-unset _bits_base _p
+unset _bits_base _p _bits_self _bits_selfdir
