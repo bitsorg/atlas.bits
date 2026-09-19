@@ -35,6 +35,8 @@ overrides:
   # Build lcg.bits at the LCG_110 branch (via the release variable above).
   lcg.bits:
     tag: "%(release)s"
+  stacks.bits:
+    tag: "%(release)s"
 
   # Straight version pins (recipe present, no patch coupling):
   compilebox:
