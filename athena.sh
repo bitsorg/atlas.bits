@@ -13,6 +13,8 @@ build_requires:
   - ninja
   - Python
   - "GCC-Toolchain:(?!osx)"
+system:
+  sandbox_network: "off"   # network allowed: build.sh may fetch during configure
 ---
 #!/bin/bash -e
 ##############################
@@ -29,8 +31,9 @@ export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 
 unset PIP_ROOT
 
-# AthExHelloWorld example
-
+# AthExHelloWorld example: its dependency-closed package set (the project build
+# skips unselected packages, so the whitelist must include every dependency).
+_afilter="$PWD/athena-package-filters.txt"
 cat > "$_afilter" <<'FILTER'
 + AtlasTest/TestTools
 + Control/CxxUtils
