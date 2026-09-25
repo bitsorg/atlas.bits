@@ -1,6 +1,8 @@
 package: lcg-view
 description: Emit an lcgcmake-style LCG release view over the bits LCG closure so ATLAS find_package(LCG N EXACT) resolves against bits-built packages.
-version: "1"
+# Versioned by LCG release: version_from takes version/tag from the build-wide
+# `release` (--set release=LCG_<N>), as in lhcb.bits.
+version_from: release
 view: true          # `bits enter lcg-view` auto-collapses paths onto the merged view
 requires:
   # ATLAS's top-level LCG dependency lists (seeded from the LCG_110_ATLAS_5
@@ -35,7 +37,10 @@ MODULE_OPTIONS="--none"   # manifest-only; the modulefile exists solely to carry
 # Field 4 (dir) may be ABSOLUTE -> point straight at the bits install prefixes,
 # so NO symlink farm and NO cmake files are needed from us (AtlasLCG ships
 # LCGConfig + all Find<Foo>.cmake modules and keys off <FOO>_LCGROOT).
-relnum="110"; postfix="_ATLAS_5"
+# The resolved release: version_from sets PKGVERSION to it however it was chosen.
+release="${PKGVERSION:?}"
+relnum="${release#LCG_}"; postfix="_ATLAS_5"
+[[ "$relnum" =~ ^[0-9]+[a-z]?$ ]] || { echo "lcg-view: '$release' is not an LCG release — build with --set release=LCG_<N>" >&2; exit 1; }
 plat="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
 # `bits overlay lcg` scans the built LCG closure and writes the manifest straight
 # into $INSTALLROOT/LCG_${relnum}${postfix}/... (so lcg-view installs directly).

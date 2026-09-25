@@ -3,8 +3,8 @@ version: v1
 
 # ATLAS group overlay — compose with:  --defaults atlas[::gcc15]
 #
-# Adds only ATLAS-specific policy on top of the shared stacks.bits defaults: the
-# LCG line to build against, the lcg.bits branch selection, and the LCG_110
+# Adds only ATLAS-specific policy on top of the shared stacks.bits defaults:
+# release tracking for lcg.bits/stacks.bits, the CVMFS layout, and the LCG_110
 # "_ATLAS_5" flavour deltas (lcgcmake heptools-110_ATLAS_5.cmake). The
 # platform/postfix that find_package(LCG 110 EXACT) keys off are NOT set here —
 # they live on the lcg-view / atlasexternals recipes that consume them, so they
@@ -15,9 +15,10 @@ requires:
   - stacks.bits
 
 variables:
-  # Selects the lcg.bits recipe branch. Must exist in lcg.bits and match what
-  # athena/Projects/Athena/build_externals.sh pins (LCG_VERSION_NUMBER=110).
-  release: "LCG_110"
+  # Default only. The release comes from the command line, --set release=LCG_110
+  # (what athena/Projects/Athena/build_externals.sh pins as LCG_VERSION_NUMBER),
+  # the same rule as every stacks.bits-based overlay, so hashes match theirs.
+  release: "main"
 
 # ATLAS CVMFS namespace + layout (system: is NOT hashed, so it never affects
 # artifact reuse). Kept here so atlas.bits can drop its own defaults-release.sh
@@ -32,7 +33,7 @@ system:
 
 # ===== LCG_110 _ATLAS_5 externals deltas (base lcg.bits LCG_110 + these) =====
 overrides:
-  # Build lcg.bits at the LCG_110 branch (via the release variable above).
+  # Recipe pool and policy layer at the branch named by `release`.
   lcg.bits:
     tag: "%(release)s"
   stacks.bits:

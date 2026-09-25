@@ -18,7 +18,6 @@ by `bits` instead of `/cvmfs/sft.cern.ch/lcg/releases`.
 ## Table of Contents
 - [Repository Discovery & Provider Model](#repository-discovery--provider-model)
 - [How the ATLAS build works on bits](#how-the-atlas-build-works-on-bits)
-- [The `defaults-release.sh` Profile](#the-defaults-releasesh-profile)
 - [The `defaults-atlas.sh` Overlay (LCG_110 `_ATLAS_5`)](#the-defaults-atlassh-overlay-lcg_110-_atlas_5)
 - [The LCG view — satisfying `find_package(LCG)`](#the-lcg-view--satisfying-find_packagelcg)
 - [The Recipes: `atlasexternals.sh` and `athena.sh`](#the-recipes-atlasexternalssh-and-athenash)
@@ -34,29 +33,29 @@ by `bits` instead of `/cvmfs/sft.cern.ch/lcg/releases`.
 
 `bits` resolves recipes along an ordered search path (`BITS_PATH`). A repository can
 be pulled in on demand by a *repository-provider* package — an ordinary recipe with
-`provides_repository: true` whose `source` points at a recipe repo. `lcg.bits` is
-such a package, so `atlas.bits` only has to require it:
+`provides_repository: true` whose `source` points at a recipe repo. Like every
+stacks-based group, `atlas.bits` requires `stacks.bits`, which requires `lcg.bits`:
+
+```
+atlas.bits  ──requires──▶  stacks.bits  ──requires──▶  lcg.bits
+  defaults-atlas.sh          defaults-release.sh          ROOT, Geant4, Boost, …
+  lcg-view.sh, athena.sh,    gcc13/14/15, dbg, cuda, …    (the LCG recipe pool)
+  atlasexternals.sh, …
+```
+
+`defaults-atlas.sh` points both providers at the branch named by `release`:
 
 ```yaml
-# defaults-release.sh
-requires:
-  - lcg.bits
 overrides:
   lcg.bits:
-    tag: "%(release)s"      # the release label selects the recipe-pool branch
+    tag: "%(release)s"
+  stacks.bits:
+    tag: "%(release)s"
 ```
 
-The chain resolved for an Athena build is one hop:
-
-```
-atlas.bits  ──requires──▶  lcg.bits         (LCG_110 recipe pool: ROOT, Geant4, Boost, …)
-   │
-   └── defaults-release.sh, defaults-atlas.sh, lcg-view.sh,
-       atlasexternals.sh, athena.sh   (this repo)
-```
-
-`%(release)s` resolves to **`LCG_110`** (see [Branches and Releases](#branches-and-releases)),
-which must exist as an `lcg.bits` branch — that branch *is* the LCG 110 recipe pool.
+The release is given on the command line (`--set release=LCG_110`, see
+[Branches and Releases](#branches-and-releases)); it must exist as an `lcg.bits`
+and a `stacks.bits` branch.
 
 ---
 
@@ -86,30 +85,15 @@ content-addressed store) rather than the SFT CVMFS release.
 
 ---
 
-## The `defaults-release.sh` Profile
-
-The base profile every build inherits. It declares the ATLAS CVMFS publish layout
-and the `lcg.bits` provider. The `system:` block (never folded into package hashes)
-holds the publish policy:
-
-```
-prefix:   /cvmfs/bits.cern.ch/atlas
-releases: {prefix}/{release}/{family}{pkg}/{tag}/{platform}
-modules:  {prefix}/{release}/{platform}/Modules/modulefiles/{pkg}
-shared:   {prefix}/{release}/noarch/{pkg}/{tag}
-```
-
-This is the LCG-style layout (with `{release}` and `{family}` segments), unlike the
-flatter Key4hep one. `prefix` is an auth boundary injected by `bits-console`; the
-value here must match the community's `ui-config.yaml`.
-
----
-
 ## The `defaults-atlas.sh` Overlay (LCG_110 `_ATLAS_5`)
 
 Composed with `--defaults atlas`, this overlay carries the ATLAS-specific policy:
 
-- `release: LCG_110` — the `lcg.bits` branch to build against.
+- `release: main` — a default only; ATLAS builds pass `--set release=LCG_110`.
+- `system:` — the ATLAS CVMFS layout (never hashed):
+  `{prefix}/{release}/{family}{pkg}/{tag}/{platform}` under `/cvmfs/bits.cern.ch/atlas`,
+  modules at `{prefix}/{release}/{platform}/Modules/modulefiles/{pkg}`. `prefix` is an
+  auth boundary injected by bits-console and must match the community's `ui-config.yaml`.
 - `LCG_PLATFORM` / `LCG_VERSION_POSTFIX=_ATLAS_5` — so `find_package(LCG 110 EXACT)`
   finds a directory `LCG_110_ATLAS_5` and the `LCG_externals_<platform>.txt` manifest.
 - `overrides:` — the `_ATLAS_5` externals deltas (lcgcmake `heptools-110_ATLAS_5.cmake`)
@@ -173,22 +157,27 @@ keep the sandbox closed.
 
 ## Branches and Releases
 
-The `release` label names the `lcg.bits` branch to build against **and** the CVMFS
-`{release}` path segment. `bits` resolves it highest-precedence-first: an explicit
-`release:` in the defaults (here `LCG_110`) → the working-directory branch name →
-`main`. The effective release must exist as an `lcg.bits` branch.
+The `release` label names the `lcg.bits` and `stacks.bits` branches to build against
+**and** the CVMFS `{release}` path segment. **Pass it on the command line**
+(`--set release=LCG_110`); `main` is only the default. Every stacks-based group
+(atlas, lhcb, key4hep, ship) follows the same rule, because a `--set` value is also
+exported into the build environment and enters every package hash: a release chosen
+any other way (a `release:` in a profile, or the checkout's branch name) hashes
+differently and nothing built by the other groups would be reused.
+
+`lcg-view` refuses to build on `main`: the ATLAS manifest needs an LCG release number.
 
 ---
 
 ## Command-Line Usage
 
 ```bash
-bits deps  Athena        --defaults atlas::gcc15   # inspect the dependency tree
-bits build atlasexternals --defaults atlas::gcc15  # the externals layer only
-bits build Athena        --defaults atlas::gcc15   # externals + Athena
+bits deps  Athena         --defaults atlas::gcc15                          # inspect the dependency tree
+bits build atlasexternals --defaults atlas::gcc15 --set release=LCG_110  # the externals layer only
+bits build Athena         --defaults atlas::gcc15 --set release=LCG_110  # externals + Athena
 ```
 
-`release` is the implicit base profile; overlay it with the compiler/build-type axes
+The base profile `release` comes from `stacks.bits`; overlay it with the compiler/build-type axes
 (`gcc15`, `dbg`, …) from `stacks.bits`. ATLAS targets `x86_64-el9-gcc15-opt`.
 
 ---
@@ -225,9 +214,8 @@ a follow-on to a working local build, not a prerequisite for it.
 
 | File | Purpose |
 |---|---|
-| `defaults-release.sh` | base profile: ATLAS CVMFS layout + `lcg.bits` provider |
-| `defaults-atlas.sh` | ATLAS group overlay: LCG_110 `_ATLAS_5` deltas + disables |
-| `lcg-view.sh` | emits the `LCG_110_ATLAS_5` manifest over the `bits` LCG closure |
+| `defaults-atlas.sh` | ATLAS group overlay: `stacks.bits` base, release tracking, CVMFS layout, LCG_110 `_ATLAS_5` deltas + disables |
+| `lcg-view.sh` | emits the `LCG_<N>_ATLAS_5` manifest (N from `release`) over the `bits` LCG closure |
 | `atlasexternals.sh` | AthenaExternals via ATLAS's `build_externals.sh` |
 | `athena.sh` | Athena via ATLAS's `build.sh` |
 
