@@ -17,10 +17,9 @@ build_requires:
   - ninja
   - "GCC-Toolchain:(?!osx)"
 env:
-  # build_externals.sh reads LCG_PLATFORM and passes -DLCG_VERSION_POSTFIX. Kept
-  # on this ATLAS-only recipe, not in shared defaults, so the reusable LCG
-  # externals keep stacks-identical hashes.
-  LCG_PLATFORM: "x86_64-el9-gcc14-opt"
+  # build_externals.sh passes -DLCG_VERSION_POSTFIX. Kept on this ATLAS-only
+  # recipe, not in shared defaults, so the reusable LCG externals keep
+  # stacks-identical hashes. LCG_PLATFORM comes from lcg-view (see body).
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 system:
   # off = network ALLOWED (sandbox_network is "is the restriction on?"; default
@@ -41,7 +40,9 @@ MODULE_OPTIONS="--lib --cmake"   # expose AthenaExternals libs + CMake config to
 # (via lcg-view -> LCG_RELEASE_BASE) and the toolchain; ATLAS's script pins
 # atlasexternals (externals.txt) + Gaudi/acts/GeoModel/vecmem + LCG 110.
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
-export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# lcg-view exports the platform it wrote its manifests for (the install arch);
+# fall back to the same derivation so the compiler/build-type axes follow.
+export LCG_PLATFORM="${LCG_PLATFORM:-${EFFECTIVE_ARCHITECTURE:?}}"
 # el9 build image ships only C.UTF-8; ATLAS build_project_externals.sh otherwise
 # forces en_US.UTF-8 (unset/"C"), and every /bin/sh warns. Pin C.UTF-8 as CI does.
 export LANG=C.UTF-8

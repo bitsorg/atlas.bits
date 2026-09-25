@@ -22,7 +22,7 @@ MODULE_OPTIONS="--bin --lib --cmake --python"
 ##############################
 
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?}"
-export LCG_PLATFORM="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+export LCG_PLATFORM="${LCG_PLATFORM:-${EFFECTIVE_ARCHITECTURE:?}}"   # from lcg-view
 export LANG=C.UTF-8
 export LC_ALL=C.UTF-8
 export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
