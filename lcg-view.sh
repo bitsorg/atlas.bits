@@ -18,10 +18,9 @@ env:
   # directory that CONTAINS LCG_110_ATLAS_5/). $LCG_VIEW_ROOT is the bits
   # per-package root var for `lcg-view`.
   LCG_RELEASE_BASE: "$LCG_VIEW_ROOT"
-  # Platform/postfix name the emitted manifest (LCG_externals_<platform>.txt and
-  # the LCG_110<postfix> dir). Kept on this ATLAS-only recipe, NOT in shared
-  # defaults, so they do not invalidate the reusable LCG externals' hashes.
-  LCG_PLATFORM: "x86_64-el9-gcc14-opt"
+  # Postfix names the emitted LCG_<N><postfix> dir. The platform is derived in
+  # the body from the install arch, so it follows the compiler/build-type axes.
+  # Kept on this ATLAS-only recipe, NOT in shared defaults (hash isolation).
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 ---
 #!/bin/bash -e
@@ -41,11 +40,13 @@ MODULE_OPTIONS="--none"   # manifest-only; the modulefile exists solely to carry
 release="${PKGVERSION:?}"
 relnum="${release#LCG_}"; postfix="_ATLAS_5"
 [[ "$relnum" =~ ^[0-9]+[a-z]?$ ]] || { echo "lcg-view: '$release' is not an LCG release — build with --set release=LCG_<N>" >&2; exit 1; }
-plat="${LCG_PLATFORM:-x86_64-el9-gcc14-opt}"
+# The install subtree (e.g. x86_64-el9-gcc15-opt) is both what to scan and the LCG
+# platform. $ARCHITECTURE is the raw host arch (x86_64-el9), which holds nothing.
+plat="${LCG_PLATFORM:-${EFFECTIVE_ARCHITECTURE:?}}"
 # `bits overlay lcg` scans the built LCG closure and writes the manifest straight
 # into $INSTALLROOT/LCG_${relnum}${postfix}/... (so lcg-view installs directly).
 "${BITS_SCRIPT_DIR:?}/bits" overlay lcg \
-    --architecture "$ARCHITECTURE" \
+    --architecture "$EFFECTIVE_ARCHITECTURE" \
     --work-dir "${WORK_DIR:-${BITS_WORK_DIR:-$PWD}}" \
     --platform "$plat" \
     --version-number "$relnum" \
