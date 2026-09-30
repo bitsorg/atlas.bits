@@ -204,11 +204,12 @@ asetup Athena,25.0.72 --releasepath=<build>/install --siteroot=<LCG view>
 
 ## Publishing to CVMFS
 
-The LCG view has two renderings of the same manifest: the **absolute-path** form
-(two text files whose `dir` fields point at the local `sw/` prefixes — used for the
-local pre-publish build) and the **relocatable** form (relative `dir` + a symlink
-farm, i.e. `bits publish --release-view`) for the CVMFS release tree. Publishing is
-a follow-on to a working local build, not a prerequisite for it.
+The LCG view's manifest (`LCG_externals_<platform>.txt`) names each package's
+directory. In a local build these are the `sw/` install prefixes; when `bits cvmfs
+publish` relocates `lcg-view`, its `post-relocate.sh` rewrites them to where each
+package is published (`{prefix}/{arch}/Packages/<pkg>/<version-revision>`), so
+`find_package(LCG 110 EXACT)` resolves against CVMFS. The release and merged views (`--release-view`) are symlinks to the same
+packages. Publishing is a follow-on to a working local build, not a prerequisite for it.
 
 ---
 
