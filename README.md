@@ -90,10 +90,12 @@ content-addressed store) rather than the SFT CVMFS release.
 Composed with `--defaults atlas`, this overlay carries the ATLAS-specific policy:
 
 - `release: main` — a default only; ATLAS builds pass `--set release=LCG_110`.
-- `system:` — the ATLAS CVMFS layout (never hashed):
-  `{prefix}/{release}/{family}{pkg}/{tag}/{platform}` under `/cvmfs/bits.cern.ch/atlas`,
-  modules at `{prefix}/{release}/{platform}/Modules/modulefiles/{pkg}`. `prefix` is an
-  auth boundary injected by bits-console and must match the community's `ui-config.yaml`.
+- `system:` — the ATLAS CVMFS layout (never hashed), as in key4hep.bits, under
+  `/cvmfs/bits.cern.ch/atlas`: packages once per build arch at
+  `{prefix}/{arch}/Packages/{pkg}/{tag}`, modules at `{prefix}/{arch}/Modules/modulefiles/{pkg}`;
+  a release is a symlink view at `{prefix}/releases/{release}/{family}{pkg}/{version}/{arch}`
+  with a merged view at `{prefix}/views/{release}/{arch}`. `prefix` is an auth boundary
+  injected by bits-console and must match the community's `ui-config.yaml`.
 - `LCG_PLATFORM` / `LCG_VERSION_POSTFIX=_ATLAS_5` — so `find_package(LCG 110 EXACT)`
   finds a directory `LCG_110_ATLAS_5` and the `LCG_externals_<platform>.txt` manifest.
 - `overrides:` — the `_ATLAS_5` externals deltas (lcgcmake `heptools-110_ATLAS_5.cmake`)

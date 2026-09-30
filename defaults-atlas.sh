@@ -27,9 +27,18 @@ variables:
 system:
   prefix:                     "/cvmfs/bits.cern.ch/atlas"
   cvmfs_user_prefix:          "{prefix}/user"
-  cvmfs_releases_template:    "{prefix}/{release}/{family}{pkg}/{tag}/{platform}"
-  cvmfs_modules_template:     "{prefix}/{release}/{platform}/Modules/modulefiles/{pkg}"
-  cvmfs_shared_path_template: "{prefix}/{release}/noarch/{pkg}/{tag}"
+  # Layout (as key4hep.bits): packages are published ONCE per build arch under
+  # {prefix}/{arch}/Packages/<pkg>/<version-revision>, modulefiles beside them;
+  # an unchanged package is not sent again. A release is a view of symlinks to
+  # them, releases/<release>/[<family>/]<pkg>/<version>/<arch>, plus a merged
+  # view at views/<release>/<arch>; both are made only when asked for
+  # (bits cvmfs publish --release-view / console option). {arch} is the build
+  # arch (x86_64-el9-gcc14-opt), so compilers/build types never collide.
+  cvmfs_packages_template:    "{prefix}/{arch}/Packages/{pkg}/{tag}"
+  cvmfs_modules_template:     "{prefix}/{arch}/Modules/modulefiles/{pkg}"
+  cvmfs_shared_path_template: "{prefix}/noarch/{pkg}/{tag}"
+  cvmfs_releases_template:    "{prefix}/releases/{release}/{family}{pkg}/{version}/{arch}"
+  cvmfs_views_template:       "{prefix}/views/{release}/{arch}"
 
 # ===== LCG_110 _ATLAS_5 externals deltas (base lcg.bits LCG_110 + these) =====
 overrides:
