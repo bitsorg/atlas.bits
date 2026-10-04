@@ -1,225 +1,118 @@
 # atlas.bits
 
-Policy layer and build recipes for building **ATLAS Athena** with [`bits`](../bits),
-using [`lcg.bits`](../lcg.bits) as the external-package pool. Like
-[`key4hep.bits`](../key4hep.bits) it is a *policy* repository — it ships almost no
-package recipes of its own and points at the ~1100 recipes in `lcg.bits`. Unlike
-`key4hep.bits`, it does **not** enumerate a per-package stack: Athena is built as
-ATLAS builds it — two large CMake super-projects driven by ATLAS's own scripts —
-so `atlas.bits` wraps those scripts rather than replacing them.
-
-The goal is to move the ATLAS build onto a `bits` backend **without changing how
-users interact with their build scripts**: `athena/Projects/Athena/build_externals.sh`
-and `build.sh` run unchanged; only the LCG release they resolve against is supplied
-by `bits` instead of `/cvmfs/sft.cern.ch/lcg/releases`.
-
----
-
-## Table of Contents
-- [Repository Discovery & Provider Model](#repository-discovery--provider-model)
-- [How the ATLAS build works on bits](#how-the-atlas-build-works-on-bits)
-- [The `defaults-atlas.sh` Overlay (LCG_110 `_ATLAS_5`)](#the-defaults-atlassh-overlay-lcg_110-_atlas_5)
-- [The LCG view — satisfying `find_package(LCG)`](#the-lcg-view--satisfying-find_packagelcg)
-- [The Recipes: `atlasexternals.sh` and `athena.sh`](#the-recipes-atlasexternalssh-and-athenash)
-- [Branches and Releases](#branches-and-releases)
-- [Command-Line Usage](#command-line-usage)
-- [Local Development](#local-development)
-- [Publishing to CVMFS](#publishing-to-cvmfs)
-- [Files Overview](#files-overview)
-
----
-
-## Repository Discovery & Provider Model
-
-`bits` resolves recipes along an ordered search path (`BITS_PATH`). A repository can
-be pulled in on demand by a *repository-provider* package — an ordinary recipe with
-`provides_repository: true` whose `source` points at a recipe repo. Like every
-stacks-based group, `atlas.bits` requires `stacks.bits`, which requires `lcg.bits`:
+Recipes and defaults for building **ATLAS Athena** with [bits](https://github.com/bitsorg/bits).
+The repository is a thin layer. It builds **AthenaExternals** (`atlasexternals`) and
+**Athena** by running ATLAS's own `Projects/Athena/build_externals.sh` and `build.sh`
+without changes. The only difference from a standard ATLAS build is where the LCG base
+comes from: it is built by bits from the [lcg.bits](https://github.com/bitsorg/lcg.bits)
+recipe pool instead of being taken from `/cvmfs/sft.cern.ch/lcg/releases`.
+`defaults-atlas.sh` requires [stacks.bits](https://github.com/bitsorg/stacks.bits), which
+provides the shared `release` base and the compiler and build-type profiles, and
+`stacks.bits` in turn requires `lcg.bits`. bits fetches both automatically through the
+[bits-providers](https://github.com/bitsorg/bits-providers) registry.
 
 ```
-atlas.bits  ──requires──▶  stacks.bits  ──requires──▶  lcg.bits
-  defaults-atlas.sh          defaults-release.sh          ROOT, Geant4, Boost, …
-  lcg-view.sh, athena.sh,    gcc13/14/15, dbg, cuda, …    (the LCG recipe pool)
-  atlasexternals.sh, …
+lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
+  recipe pool           LCG manifest    build_externals.sh    build.sh
 ```
 
-`defaults-atlas.sh` points both providers at the branch named by `release`:
+## Prerequisites
 
-```yaml
-overrides:
-  lcg.bits:
-    tag: "%(release)s"
-  stacks.bits:
-    tag: "%(release)s"
-```
+- bits and its requirements (Python 3, git, Environment Modules), see the
+  [bits installation instructions](https://github.com/bitsorg/bits#installation).
+- ATLAS targets `x86_64-el9-gcc15-opt`. The bits-console ATLAS community also offers
+  el8, el10 and aarch64-el9; Ubuntu is not a supported Athena platform.
+- Network access during the build. `atlasexternals` and `Athena` set
+  `sandbox_network: "off"` because `build_externals.sh` clones `atlasexternals` and
+  downloads the Gaudi, ACTS, GeoModel and VecMem sources.
+- Read access to `https://gitlab.cern.ch/atlas/athena`, which both recipes check out.
 
-The release is given on the command line (`--set release=LCG_110`, see
-[Branches and Releases](#branches-and-releases)); it must exist as an `lcg.bits`
-and a `stacks.bits` branch.
-
----
-
-## How the ATLAS build works on bits
-
-ATLAS builds Athena as two CMake super-projects, both consuming an **LCG release**
-as their external base:
-
-1. `Projects/Athena/build_externals.sh` builds **AthenaExternals** (from
-   `atlas/atlasexternals`, version pinned in `Projects/Athena/externals.txt`),
-   layering ATLAS's own Gaudi fork, ACTS, GeoModel and vecmem on top of an
-   LCG release found via `find_package(LCG 110 EXACT)` (postfix `_ATLAS_5`).
-2. `Projects/Athena/build.sh` builds **Athena** (version in `Projects/Athena/version.txt`)
-   on top of AthenaExternals.
-
-`atlas.bits` maps this onto `bits` as:
-
-```
-lcg.bits (LCG_110)  ──▶  lcg-view  ──▶  atlasexternals  ──▶  Athena
-   recipe pool          LCG manifest    build_externals.sh    build.sh
-```
-
-`lcg-view` presents the `bits`-built LCG closure in the layout ATLAS's
-`find_package(LCG)` expects, so **ATLAS's CMake and scripts run unmodified** — the
-only thing that changes is that the LCG base comes from `bits` (and its signed,
-content-addressed store) rather than the SFT CVMFS release.
-
----
-
-## The `defaults-atlas.sh` Overlay (LCG_110 `_ATLAS_5`)
-
-Composed with `--defaults atlas`, this overlay carries the ATLAS-specific policy:
-
-- `release: main` — a default only; ATLAS builds pass `--set release=LCG_110`.
-- `system:` — the ATLAS CVMFS layout (never hashed), as in key4hep.bits, under
-  `/cvmfs/bits.cern.ch/atlas`: packages once per build arch at
-  `{prefix}/{arch}/Packages/{pkg}/{tag}`, modules at `{prefix}/{arch}/Modules/modulefiles/{pkg}`;
-  a release is a symlink view at `{prefix}/releases/{release}/{family}{pkg}/{version}/{arch}`
-  with a merged view at `{prefix}/views/{release}/{arch}`. `prefix` is an auth boundary
-  injected by bits-console and must match the community's `ui-config.yaml`.
-- `LCG_PLATFORM` / `LCG_VERSION_POSTFIX=_ATLAS_5` — so `find_package(LCG 110 EXACT)`
-  finds a directory `LCG_110_ATLAS_5` and the `LCG_externals_<platform>.txt` manifest.
-- `overrides:` — the `_ATLAS_5` externals deltas (lcgcmake `heptools-110_ATLAS_5.cmake`)
-  applied on top of the shared base LCG_110 branch: version pins for the ATLAS
-  generators and the CUDA stack.
-- `disable:` — `DD4hep` and `acts` (**AthenaExternals builds its own** GeoModel and
-  ACTS v47.6.1), plus `R`, `rpy2`, `onnxruntime`, `tf2onnx`.
-
-Keeping these deltas in `atlas.bits` (rather than in `lcg.bits`) means the shared
-`lcg.bits` LCG_110 branch stays the neutral base LCG 110, and ATLAS's choices ride
-on top — other communities using the same pool are unaffected.
-
-> **Patch-coupled entries.** The ATLAS author-patched generators (`epos4`,
-> `hijing`, `madgraph5amc`) pin `.atlasN` versions that require the matching author
-> patch in the `lcg.bits` recipe; the recipes currently carry the *older* patch, so
-> these will not build until the recipe is updated. They are pinned in the overlay
-> to record the target. `tauola++` (`lcg.bits/tauolacpp.sh`) and the
-> `jax_cuda12_*` packages are named by `_ATLAS_5` but need recipe work too.
-
----
-
-## The LCG view — satisfying `find_package(LCG)`
-
-ATLAS's `find_package(LCG 110 EXACT)` (config-mode, `atlasexternals/Build/AtlasLCG/
-LCGConfig.cmake`) reads, under `$LCG_RELEASE_BASE`:
-
-```
-LCG_110_ATLAS_5/LCG_externals_<platform>.txt      # name;hash;version;dir;deps
-LCG_110_ATLAS_5/LCG_generators_<platform>.txt
-```
-
-and sets each `<PKG>_LCGROOT` from field 4 (`dir`), which **may be an absolute
-path**. `lcg-view.sh` emits exactly these manifests over the `bits` LCG closure,
-with `dir` pointing straight at the `bits` install prefixes — no symlink farm and
-no CMake from us; AtlasLCG (shipped by ATLAS) is the resolver. `lcg-view` exports
-`LCG_RELEASE_BASE`, so the view is materialised **locally, before any publish**,
-and `bits build Athena` works from the local cache.
-
-The manifest lines are produced by a `bits lcg-view-manifest` helper (the one new
-piece of `bits` code this use case needs — the versions/hashes/deps live in the
-resolved specs, not in a recipe's shell env).
-
----
-
-## The Recipes: `atlasexternals.sh` and `athena.sh`
-
-Both check out `atlas/athena` and drive ATLAS's own scripts, so the build is exactly
-what an ATLAS developer would run:
-
-| recipe | version from | runs | requires |
-|---|---|---|---|
-| `atlasexternals` | `externals.txt` (`AthenaExternalsVersion`) | `Projects/Athena/build_externals.sh` | `lcg-view` |
-| `Athena` | `version.txt` | `Projects/Athena/build.sh` | `atlasexternals` |
-
-Both set `sandbox_network: "off"` (network **allowed** — `build_externals.sh` clones
-`atlasexternals` and downloads the Gaudi/ACTS/GeoModel/vecmem tarballs). This is
-against `bits`' reproducible default; the cleaner end state is to prefetch those and
-keep the sandbox closed.
-
----
-
-## Branches and Releases
-
-The `release` label names the `lcg.bits` and `stacks.bits` branches to build against
-**and** the CVMFS `{release}` path segment. **Pass it on the command line**
-(`--set release=LCG_110`); `main` is only the default. Every stacks-based group
-(atlas, lhcb, key4hep, ship) follows the same rule, because a `--set` value is also
-exported into the build environment and enters every package hash: a release chosen
-any other way (a `release:` in a profile, or the checkout's branch name) hashes
-differently and nothing built by the other groups would be reused.
-
-`lcg-view` refuses to build on `main`: the ATLAS manifest needs an LCG release number.
-
----
-
-## Command-Line Usage
+## Getting started
 
 ```bash
-bits deps  Athena         --defaults atlas::gcc15                          # inspect the dependency tree
-bits build atlasexternals --defaults atlas::gcc15 --set release=LCG_110  # the externals layer only
-bits build Athena         --defaults atlas::gcc15 --set release=LCG_110  # externals + Athena
+bits init atlas.bits && cd atlas.bits     # or: git clone https://github.com/bitsorg/atlas.bits
+bits use build --architecture x86_64-el9 --defaults atlas::gcc15::opt --set release=LCG_110
+bits build --dry-run Athena
+bits build Athena                         # LCG base, AthenaExternals and Athena
+bits enter Athena/latest
 ```
 
-The base profile `release` comes from `stacks.bits`; overlay it with the compiler/build-type axes
-(`gcc15`, `dbg`, …) from `stacks.bits`. ATLAS targets `x86_64-el9-gcc15-opt`.
+The `bits use` profile stores the settings in this checkout, so every later
+`bits build` here gets them; options given on the command line still win. The build
+architecture is `x86_64-el9-gcc15-opt`. `bits build atlasexternals` builds only the LCG
+base and AthenaExternals. Check the machine with `bits doctor`. To build elsewhere,
+`export BITS_WORK_DIR=/path/to/sw`. The profile format is described in the
+[bits user guide](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#4-configuration).
 
----
+To use an ATLAS-style setup instead of `bits enter`, source `setupATLAS.sh` from this
+repository. It points `LCG_RELEASE_BASE` at the bits-built `lcg-view` and sources the
+`setup.sh` of `atlasexternals` and `Athena`. Set `BITS_SW` to your work directory and
+`BITS_ARCH=x86_64-el9-gcc15-opt` (the script's default, `x86_64-el9`, holds no packages).
 
-## Local Development
+## Notes for ATLAS users
 
-Build with `bits`; explore the result with `bitsenv` (Environment Modules front-end):
+- **Always pass the release on the command line** (`--set release=LCG_110`, or record it
+  with `bits use` as above). The value selects the `lcg.bits` and `stacks.bits` branches
+  and the CVMFS `{release}` path segment. It also enters every package hash. A release
+  chosen any other way hashes differently, so nothing built by the other groups is reused.
+  `lcg-view` stops with an error on the default `main`, because the ATLAS manifest needs
+  an LCG release number.
+- **The LCG view.** `lcg-view` uses `bits overlay lcg` to write
+  `LCG_110_ATLAS_5/LCG_externals_<platform>.txt` and `LCG_generators_<platform>.txt` over
+  the bits-built closure of `lcg-externals` and `lcg-generators`. The package
+  directories in these files point straight at the bits install prefixes. ATLAS's own
+  `find_package(LCG 110 EXACT)` (AtlasLCG) reads them, so no ATLAS CMake is changed.
+- **The `_ATLAS_5` flavour.** `defaults-atlas.sh` applies the deltas of lcgcmake
+  `heptools-110_ATLAS_5.cmake` on top of the neutral `lcg.bits` LCG_110 branch:
+  generator and xrootd version pins, the ATLAS-patched `epos4`, `hijing` and
+  `madgraph5amc` versions, and the CUDA stack. It also disables `DD4hep` and `acts`
+  (AthenaExternals builds its own GeoModel and ACTS), `R`, `rpy2`, `onnxruntime` and
+  `tf2onnx`. Other communities using the same branch are not affected.
+- **Known gaps.** `tauolacpp` builds `1.1.9.atlas1`, because no `atlas2` patch exists
+  yet. The `jax_cuda12_*` packages have no recipe in `lcg.bits`. The `cuda` and `cudnn`
+  pins (13.3.1, 9.20.0.48) are newer than the `lcg.bits` recipes support today.
+- **What is built.** `atlasexternals` is version 2.1.90 from athena `main`
+  (`Projects/Athena/externals.txt`). `Athena` is version 25.0.70 (tag
+  `release/25.0.70`), and it currently builds only the `AthExHelloWorld` example and the
+  packages it depends on. The package filter is written in `athena.sh`.
+- **Developing Athena.** `bits init -c . Athena` creates a writable athena checkout
+  next to the recipes; later builds of `Athena` use it. See the bits cookbook on
+  [developing a single package](https://github.com/bitsorg/bits/blob/main/docs/COOKBOOK.md#develop-and-iterate-on-a-single-package).
+- **CVMFS layout.** Builds publish under `/cvmfs/bits.cern.ch/atlas` with the shared
+  [stacks.bits layout](https://github.com/bitsorg/stacks.bits#cvmfs-layout); only the
+  prefix differs. `prefix` must match `cvmfs_prefix` in the bits-console ATLAS community
+  configuration. When `lcg-view` is published, its `post-relocate.sh` rewrites the
+  manifest directories to the published package paths, so `find_package(LCG)` resolves
+  against CVMFS. Publishing is done by the bits-console pipeline after a working local
+  build.
 
-```bash
-bitsenv q                       # list built modules
-bitsenv enter Athena/25.0.72    # subshell with the module(s) loaded
-eval `bitsenv printenv Athena/25.0.72`
-```
-
-After a local build, the standard ATLAS runtime setup still applies:
-
-```bash
-asetup Athena,25.0.72 --releasepath=<build>/install --siteroot=<LCG view>
-```
-
----
-
-## Publishing to CVMFS
-
-The LCG view's manifest (`LCG_externals_<platform>.txt`) names each package's
-directory. In a local build these are the `sw/` install prefixes; when `bits cvmfs
-publish` relocates `lcg-view`, its `post-relocate.sh` rewrites them to where each
-package is published (`{prefix}/{arch}/Packages/<pkg>/<version-revision>`), so
-`find_package(LCG 110 EXACT)` resolves against CVMFS. The release and merged views (`--release-view`) are symlinks to the same
-packages. Publishing is a follow-on to a working local build, not a prerequisite for it.
-
----
-
-## Files Overview
+## Files
 
 | File | Purpose |
 |---|---|
-| `defaults-atlas.sh` | ATLAS group overlay: `stacks.bits` base, release tracking, CVMFS layout, LCG_110 `_ATLAS_5` deltas + disables |
-| `lcg-view.sh` | emits the `LCG_<N>_ATLAS_5` manifest (N from `release`) over the `bits` LCG closure |
-| `atlasexternals.sh` | AthenaExternals via ATLAS's `build_externals.sh` |
-| `athena.sh` | Athena via ATLAS's `build.sh` |
+| `defaults-atlas.sh` | ATLAS overlay: `stacks.bits` base, release tracking, CVMFS layout, `_ATLAS_5` deltas and disables |
+| `lcg-externals.sh`, `lcg-generators.sh` | ATLAS's top-level LCG externals and generators (from the `LCG_110_ATLAS_5` manifest) |
+| `lcg-view.sh` | Writes the `LCG_<N>_ATLAS_5` manifests over the bits-built LCG closure |
+| `atlasexternals.sh` | AthenaExternals, built with ATLAS's `build_externals.sh` |
+| `athena.sh` | Athena, built with ATLAS's `build.sh` |
+| `setupATLAS.sh` | Optional `setupATLAS` replacement that uses the bits-built LCG view and projects |
 
-Compiler/build-type axis profiles (`gcc15`, `dbg`, `cuda`, …) are **not** shipped here — they are inherited from `stacks.bits` when it is on `BITS_PATH`.
+The compiler and build-type profiles (`gcc13`, `gcc14`, `gcc15`, `opt`, `dbg`, `cuda`, ...)
+are not part of this repository. They come from `stacks.bits`.
+
+## More information
+
+- [Producing an LCG release view](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#produce-an-lcg-release-view);
+  ATLAS sources: [athena](https://gitlab.cern.ch/atlas/athena) and
+  [atlasexternals](https://gitlab.cern.ch/atlas/atlasexternals)
+- [stacks.bits](https://github.com/bitsorg/stacks.bits#readme) and
+  [lcg.bits](https://github.com/bitsorg/lcg.bits#readme) READMEs: profiles, releases,
+  CVMFS layout and the recipe pool; [bits-providers](https://github.com/bitsorg/bits-providers): the registry
+- bits [User Guide](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md),
+  [Cookbook](https://github.com/bitsorg/bits/blob/main/docs/COOKBOOK.md),
+  [Reference](https://github.com/bitsorg/bits/blob/main/docs/REFERENCE.md)
+- [bits-console](https://gitlab.cern.ch/buncic/bits-console): CI builds and CVMFS publishing
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE).
