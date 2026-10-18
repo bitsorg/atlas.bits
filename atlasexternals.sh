@@ -1,10 +1,7 @@
 package: atlasexternals
 description: ATLAS AthenaExternals project, built from athena's own build_externals.sh on an lcg.bits LCG base.
-version: "2.1.90"       # AthenaExternalsVersion, athena/Projects/Athena/externals.txt
-                        # TODO(scoped option 3): read from externals.txt to avoid drift.
-tag: "main"             # athena branch carrying build_externals.sh + externals.txt;
-                        # main's externals.txt currently sets AthenaExternalsVersion = 2.1.90,
-                        # which build_externals.sh uses to clone atlasexternals (tracks main; re-sync when it moves).
+version: "%(tag_basename)s"   # the Athena release; ATHENAEXTERNALS_VERSION has the externals'
+tag: "%(athena_release)s"     # athena ref: externals.txt picks atlasexternals, build_externals.sh the rest
 source: https://gitlab.cern.ch/atlas/athena   # carries Projects/Athena/build_externals.sh
 requires:
   - lcg-view            # provides $LCG_RELEASE_BASE + the LCG_110_ATLAS_5 manifest
@@ -76,47 +73,22 @@ unset PIP_ROOT
 # (`hostname`, which CORAL's build banner calls, is supplied by the build image
 # via bits-containers build-tools, not patched out here.)
 # NB: the patch value must stay space-free so it survives -x -> cmake -D word-splitting.
-# Enable CrestApi (CREST conditions client) in the AthenaExternals build. It is a
-# whitelist-EXCLUDED package: Projects/AthenaExternals/package_filters.txt lists the
-# built packages and ends in `- .*`, and CrestApi has no ATLAS_BUILD_* flag. atlas_project
-# reads ATLAS_PACKAGE_FILTER_FILE (CACHE FILEPATH, AtlasInternals.cmake), so we point it
-# at an augmented copy of the pinned filter + External/CrestApi. NB: this list mirrors
-# atlasexternals 2.1.90 package_filters.txt -- re-sync if the atlasexternals pin moves.
+# The package filter of the atlasexternals this Athena pins (build_externals.sh
+# clones it again to build), plus CrestApi, which has no ATLAS_BUILD_* flag.
+_ext=$(sed -n 's/^AthenaExternalsVersion *= *//p' "$SOURCEDIR/Projects/Athena/externals.txt" | tr -d ' \r')
+_ext=${_ext#origin/}
+[ -n "$_ext" ] || { echo "ERROR: no AthenaExternalsVersion in Projects/Athena/externals.txt" >&2; exit 1; }
+_lcg=$(sed -n 's/.*-DLCG_VERSION_NUMBER=\([0-9]*\).*/\1/p; s/.*-DLCG_VERSION_POSTFIX="\([^"]*\)".*/\1/p' \
+         "$SOURCEDIR/Projects/Athena/build_externals.sh" | tr -d '\n')
+[ -d "$LCG_RELEASE_BASE/LCG_$_lcg" ] || { echo "ERROR: this Athena wants LCG_$_lcg; lcg-view provides $(ls "$LCG_RELEASE_BASE")" >&2; exit 1; }
+_src="$PWD/atlasexternals-filter"
+rm -rf "$_src"
+_url=https://gitlab.cern.ch/atlas/atlasexternals.git
+git clone -q --depth 1 --branch "$_ext" "$_url" "$_src" 2>/dev/null ||
+  { git clone -q "$_url" "$_src" && git -C "$_src" checkout -q "$_ext"; }   # a commit
 _filter="$PWD/athena-package-filters.txt"
-cat > "$_filter" <<'FILTER'
-+ External/Acts
-+ External/APTypes
-+ External/boost-mpi3
-+ External/CheckerGccPlugins
-+ External/CLHEP
-+ External/Coin3D
-+ External/COOL
-+ External/CORAL
-+ External/flake8_atlas
-+ External/Gaudi
-+ External/GPerfTools
-+ External/Geant4
-+ External/VecCore
-+ External/VecGeom
-+ External/GeoModel
-+ External/GoogleTest
-+ External/lwtnn
-+ External/MKL
-+ External/onnxruntime
-+ External/prmon
-+ External/PyModules
-+ External/Simage
-+ External/SoQt
-+ External/dSFMT
-+ External/triSYCL
-+ External/itksw-endec
-+ External/yampl
-+ External/nlohmann_json
-+ External/VecMem
-+ External/Triton
-+ External/CrestApi
-- .*
-FILTER
+sed '/^- \.\*$/i + External/CrestApi' "$_src/Projects/AthenaExternals/package_filters.txt" > "$_filter"
+grep -qx '+ External/CrestApi' "$_filter" || { echo "ERROR: no '- .*' line in atlasexternals $_ext package_filters.txt" >&2; exit 1; }
 "$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON -DATLAS_CORAL_PATCH=PATCH_COMMAND;sed;-i;-e;s/OracleAccess//g;-e;\#CORAL_SERVER/#d;CMakeLists.txt -DATLAS_PACKAGE_FILTER_FILE=$_filter" -k "-j1"
 # Route the produced InstallArea platform subtree into $INSTALLROOT so bits
 # captures it as this package. build_project.sh installs to
@@ -131,4 +103,5 @@ rsync -a "$_ia"/*/ "$INSTALLROOT"/
 MakeModule
 cat >> "$MODULEFILE" <<EOF
 setenv ATLAS_EXT_DIR  \$PKG_ROOT
+setenv ATHENAEXTERNALS_VERSION $_ext
 EOF

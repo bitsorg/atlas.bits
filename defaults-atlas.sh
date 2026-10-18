@@ -15,10 +15,13 @@ requires:
   - stacks.bits
 
 variables:
-  # Default only. The release comes from the command line, --set release=LCG_110
-  # (what athena/Projects/Athena/build_externals.sh pins as LCG_VERSION_NUMBER),
-  # the same rule as every stacks.bits-based overlay, so hashes match theirs.
+  # LCG release, --set release=LCG_110, as in stacks.bits (so the LCG hashes match).
   release: "main"
+  # Athena ref, --set athena_release=release/25.0.75 (or main, a commit); it also
+  # picks atlasexternals. Not exported: a change rebuilds only athena and atlasexternals.
+  athena_release:
+    value: "main"
+    export: false
 
 # The ATLAS CVMFS namespace and layout are in cvmfs.yaml.
 

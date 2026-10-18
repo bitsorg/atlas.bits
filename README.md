@@ -31,7 +31,8 @@ lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
 
 ```bash
 bits init atlas.bits && cd atlas.bits     # or: git clone https://github.com/bitsorg/atlas.bits
-bits use build --architecture x86_64-el9 --defaults atlas::gcc15::opt --set release=LCG_110
+bits use build --architecture x86_64-el9 --defaults atlas::gcc15::opt --set release=LCG_110 \
+              --set athena_release=release/25.0.75
 bits build --dry-run Athena
 bits build Athena                         # LCG base, AthenaExternals and Athena
 bits enter Athena/latest
@@ -71,10 +72,12 @@ repository. It points `LCG_RELEASE_BASE` at the bits-built `lcg-view` and source
 - **Known gaps.** `tauolacpp` builds `1.1.9.atlas1`, because no `atlas2` patch exists
   yet. The `jax_cuda12_*` packages have no recipe in `lcg.bits`. The `cuda` and `cudnn`
   pins (13.3.1, 9.20.0.48) are newer than the `lcg.bits` recipes support today.
-- **What is built.** `atlasexternals` is version 2.1.90 from athena `main`
-  (`Projects/Athena/externals.txt`). `Athena` is version 25.0.70 (tag
-  `release/25.0.70`), and it currently builds only the `AthExHelloWorld` example and the
-  packages it depends on. The package filter is written in `athena.sh`.
+- **What is built.** `athena_release` (default `main`) is the athena ref of both
+  `Athena` and `atlasexternals`: its `externals.txt` picks the atlasexternals version,
+  built with that version's own package filter plus CrestApi. The ref must use the LCG
+  that `lcg-view` provides (`LCG_110_ATLAS_5`: 25.0.71 and later), or the build stops.
+  `Athena` currently builds only the `AthExHelloWorld` example and the packages it
+  depends on (the filter in `athena.sh`).
 - **Developing Athena.** `bits init -c . Athena` creates a writable athena checkout
   next to the recipes; later builds of `Athena` use it. See the bits cookbook on
   [developing a single package](https://github.com/bitsorg/bits/blob/main/docs/COOKBOOK.md#develop-and-iterate-on-a-single-package).

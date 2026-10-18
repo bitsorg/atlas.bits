@@ -1,7 +1,7 @@
 package: Athena
 description: ATLAS Athena framework, built from  own build.sh on top of the AthenaExternals bits package.
-version: "25.0.70"    # AthenaExternalsVersion 2.1.86; builds on our 2.1.90 externals.
-tag: "release/%(version)s" 
+version: "%(tag_basename)s"   # release/25.0.75 -> 25.0.75
+tag: "%(athena_release)s"     # defaults-atlas.sh; the same ref as atlasexternals
 source: https://gitlab.cern.ch/atlas/athena
 requires:
   - atlasexternals   
