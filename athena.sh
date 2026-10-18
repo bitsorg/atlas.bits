@@ -31,29 +31,70 @@ export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 
 unset PIP_ROOT
 
-# AthExHelloWorld example: its dependency-closed package set (the project build
-# skips unselected packages, so the whitelist must include every dependency).
+# AthExHelloWorld and what `athena.py HelloWorldConfig.py` loads (python imports,
+# CompFactory components, the libraries they link): the build skips the others.
 _afilter="$PWD/athena-package-filters.txt"
 cat > "$_afilter" <<'FILTER'
 + AtlasTest/TestTools
-+ Control/CxxUtils
-+ Control/AthContainersInterfaces
-+ Control/AthContainers
 + Control/AthAllocators
-+ Control/AthLinks
-+ Control/AthenaKernel
-+ Control/DataModelRoot
-+ Control/RootUtils
-+ Control/xAODRootAccessInterfaces
-+ Control/SGTools
-+ Control/SGCore
-+ Control/StoreGate
++ Control/AthContainers
++ Control/AthContainersInterfaces
++ Control/AthContainersRoot
 + Control/AthenaBaseComps
++ Control/AthenaCommon
++ Control/AthenaConfiguration
++ Control/AthenaExamples/AthExHelloWorld
++ Control/AthenaInterprocess
++ Control/AthenaKernel
++ Control/AthenaMP
++ Control/AthenaMPTools
++ Control/AthenaServices
++ Control/AthLinks
++ Control/AthLinksSA
++ Control/AthToolSupport/AsgMessaging
++ Control/AthToolSupport/AsgTools
 + Control/CLIDComps
++ Control/CxxUtils
++ Control/DataModelRoot
++ Control/GaudiSequencer
++ Control/PerformanceMonitoring/PerfMonComps
++ Control/PerformanceMonitoring/PerfMonGPerfTools
++ Control/PerformanceMonitoring/PerfMonKernel
++ Control/RootUtils
++ Control/SGComps
++ Control/SGCore
++ Control/SGTools
++ Control/StoreGate
++ Control/Valkyrie
++ Control/xAODRootAccessInterfaces
++ Database/APR/StorageSvc
++ Database/AthenaPOOL/AthenaPoolUtilities
++ Database/AthenaPOOL/PoolSvc
++ Database/AthenaRoot/RootAuxDynIO
++ Database/CoraCool
++ Database/CoralUtilities
++ Database/DBLock
++ Database/IOVDbDataModel
++ Database/IOVDbMetaDataTools
++ Database/IOVDbSvc
 + Database/PersistentDataModel
++ Database/SQLiteDBSvc
++ DetectorDescription/GeoModel/GeoModelInterfaces
++ Event/EventInfo
++ Event/EventInfoMgt
++ Event/EventInfoUtils
 + Event/xAOD/xAODCore
 + Event/xAOD/xAODEventInfo
-+ Control/AthenaExamples/AthExHelloWorld
++ Generators/GeneratorConfig
++ Generators/McEventSelector
++ Tools/Campaigns
++ Tools/PathResolver
++ Tools/PyUtils
++ Trigger/TrigConfiguration/TrigConfBase
++ Trigger/TrigConfiguration/TrigConfData
++ Trigger/TrigConfiguration/TrigConfigSvc
++ Trigger/TrigConfiguration/TrigConfInterfaces
++ Trigger/TrigConfiguration/TrigConfIO
 - .*
 FILTER
 
