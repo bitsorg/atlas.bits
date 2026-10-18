@@ -57,6 +57,16 @@ cat > "$_afilter" <<'FILTER'
 - .*
 FILTER
 
+# Athena 25.0.74 and later format a std::pair (C++23 <format>, gcc15 libstdc++);
+# stop here, not deep in the build, when this compiler cannot.
+_cxx="${CXX:-c++}"
+if grep -qsF 'make_pair(procName,procTiName), id' "$SOURCEDIR/Control/CLIDComps/src/ClassIDSvc.cxx" &&
+   ! printf '#include <format>\n#include <string>\n#include <utility>\nauto s = std::format("{}", std::pair<std::string, std::string>{});\n' |
+     "$_cxx" -std=c++23 -fsyntax-only -x c++ - 2>/dev/null; then
+  echo "ERROR: Athena $PKGVERSION needs gcc15 (std::format of std::pair); $_cxx is $("$_cxx" -dumpversion). Use --defaults atlas::gcc15::opt" >&2
+  exit 1
+fi
+
 _bdir="$PWD/build"
 
 "$SOURCEDIR/Projects/Athena/build.sh" -acmi -b "$_bdir" \

@@ -76,6 +76,8 @@ repository. It points `LCG_RELEASE_BASE` at the bits-built `lcg-view` and source
   `Athena` and `atlasexternals`: its `externals.txt` picks the atlasexternals version,
   built with that version's own package filter plus CrestApi. The ref must use the LCG
   that `lcg-view` provides (`LCG_110_ATLAS_5`: 25.0.71 and later), or the build stops.
+  Athena 25.0.74 and later need gcc15 (`athena.sh` checks the compiler first); build an
+  older ref with the compiler it was released with, e.g. `--defaults atlas::gcc14::opt`.
   `Athena` currently builds only the `AthExHelloWorld` example and the packages it
   depends on (the filter in `athena.sh`).
 - **Developing Athena.** `bits init -c . Athena` creates a writable athena checkout
