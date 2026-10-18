@@ -52,7 +52,8 @@ when not built there, from CVMFS under the `cvmfs.yaml` prefix (`BITS_CVMFS_PREF
 overrides it; empty turns CVMFS off). It points `LCG_RELEASE_BASE` at `lcg-view` and
 sources the `setup.sh` of `atlasexternals` and `Athena`, then the stock ALRB setup.
 `BITS_ATHENA=25.0.75` picks an Athena version (default: the latest built, else the
-newest published); `BITS_ARCH` defaults to `x86_64-el9-gcc15-opt`.
+newest published), and stops when the version given is not found; `BITS_ARCH` defaults to
+`x86_64-el9-gcc15-opt`. An `LCG_RELEASE_BASE` set before is kept, and said so.
 
 ## Notes for ATLAS users
 
@@ -82,8 +83,8 @@ newest published); `BITS_ARCH` defaults to `x86_64-el9-gcc15-opt`.
   that `lcg-view` provides (`LCG_110_ATLAS_5`: 25.0.71 and later), or the build stops.
   Athena 25.0.74 and later need gcc15 (`athena.sh` checks the compiler first); build an
   older ref with the compiler it was released with, e.g. `--defaults atlas::gcc14::opt`.
-  `Athena` currently builds only the `AthExHelloWorld` example and the packages it
-  depends on (the filter in `athena.sh`).
+  `Athena` currently builds only the `AthExHelloWorld` example and what
+  `athena.py AthExHelloWorld/HelloWorldConfig.py` needs to run (the filter in `athena.sh`).
 - **Developing Athena.** `bits init -c . Athena` creates a writable athena checkout
   next to the recipes; later builds of `Athena` use it. See the bits cookbook on
   [developing a single package](https://github.com/bitsorg/bits/blob/main/docs/COOKBOOK.md#develop-and-iterate-on-a-single-package).

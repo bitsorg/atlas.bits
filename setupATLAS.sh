@@ -43,14 +43,26 @@ _bits_dep() {
     _bits_pkg "$2" "${_bits_t}"
 }
 
+_bits_done() {
+    unset _bits_self _bits_selfdir _bits_cvmfs _bits_p _bits_t _bits_d _bits_athena _bits_ext _bits_lcg
+    unset -f _bits_tags _bits_pkg _bits_dep _bits_done
+}
+
 # Athena (BITS_ATHENA=25.0.75 picks one), then the atlasexternals and lcg-view it uses.
 _bits_athena=$(_bits_pkg Athena "${BITS_ATHENA:-}")
+if [ -n "${BITS_ATHENA:-}" ] && [ -z "${_bits_athena}" ]; then
+    echo "setupATLAS.sh: no Athena ${BITS_ATHENA} for ${BITS_ARCH} in ${BITS_SW}${_bits_cvmfs:+ or ${_bits_cvmfs}}" >&2
+    _bits_done
+    return 1 2>/dev/null || exit 1
+fi
 _bits_ext=$(_bits_dep "${_bits_athena}" atlasexternals)
 _bits_lcg=$(_bits_dep "${_bits_ext}" lcg-view)
 
 # 1) LCG: lcg-view's prefix is LCG_RELEASE_BASE, which AtlasLCG's find_package(LCG) reads.
 if [ -z "${LCG_RELEASE_BASE:-}" ] && [ -n "${_bits_lcg}" ]; then
     export LCG_RELEASE_BASE="${_bits_lcg}"
+elif [ -n "${LCG_RELEASE_BASE:-}" ] && [ "${LCG_RELEASE_BASE}" != "${_bits_lcg}" ]; then
+    echo "setupATLAS.sh: keeping the LCG_RELEASE_BASE set before (not ${_bits_lcg:-a bits lcg-view})"
 fi
 echo "setupATLAS.sh: LCG_RELEASE_BASE -> ${LCG_RELEASE_BASE:-(none: no lcg-view for ${BITS_ARCH})}"
 
@@ -73,5 +85,4 @@ else
     echo "               bits externals/LCG env is set, but asetup/lsetup are unavailable." >&2
 fi
 
-unset _bits_self _bits_selfdir _bits_cvmfs _bits_p _bits_t _bits_d _bits_athena _bits_ext _bits_lcg
-unset -f _bits_tags _bits_pkg _bits_dep
+_bits_done
