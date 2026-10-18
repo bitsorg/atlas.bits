@@ -46,9 +46,13 @@ base and AthenaExternals. Check the machine with `bits doctor`. To build elsewhe
 [bits user guide](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#4-configuration).
 
 To use an ATLAS-style setup instead of `bits enter`, source `setupATLAS.sh` from this
-repository. It points `LCG_RELEASE_BASE` at the bits-built `lcg-view` and sources the
-`setup.sh` of `atlasexternals` and `Athena`. Set `BITS_SW` to your work directory and
-`BITS_ARCH=x86_64-el9-gcc15-opt` (the script's default, `x86_64-el9`, holds no packages).
+repository. It takes Athena, then the `atlasexternals` and `lcg-view` that Athena was
+built with, from the work directory (`BITS_SW`, default `sw/` beside the script) or,
+when not built there, from CVMFS under the `cvmfs.yaml` prefix (`BITS_CVMFS_PREFIX`
+overrides it; empty turns CVMFS off). It points `LCG_RELEASE_BASE` at `lcg-view` and
+sources the `setup.sh` of `atlasexternals` and `Athena`, then the stock ALRB setup.
+`BITS_ATHENA=25.0.75` picks an Athena version (default: the latest built, else the
+newest published); `BITS_ARCH` defaults to `x86_64-el9-gcc15-opt`.
 
 ## Notes for ATLAS users
 
