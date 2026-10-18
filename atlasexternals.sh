@@ -2,77 +2,41 @@ package: atlasexternals
 description: ATLAS AthenaExternals project, built from athena's own build_externals.sh on an lcg.bits LCG base.
 version: "%(tag_basename)s"   # the Athena release; ATHENAEXTERNALS_VERSION has the externals'
 tag: "%(athena_release)s"     # athena ref: externals.txt picks atlasexternals, build_externals.sh the rest
-source: https://gitlab.cern.ch/atlas/athena   # carries Projects/Athena/build_externals.sh
+source: https://gitlab.cern.ch/atlas/athena
 requires:
-  - lcg-view            # provides $LCG_RELEASE_BASE + the LCG_110_ATLAS_5 manifest
-  - Python              # runtime dep: AthenaExternals links libpython (Gaudi, GaudiPython,
-                        # confdb2 merge). Must be in the runtime closure so its lib is on
-                        # LD_LIBRARY_PATH and the interpreter binds bits libpython, not host.
+  - lcg-view            # LCG_RELEASE_BASE and the LCG_110_ATLAS_5 manifest
+  - Python              # AthenaExternals links libpython: it must be bits' at run time
 build_requires:
   - bits-recipe-tools
   - CMake
   - ninja
   - "GCC-Toolchain:(?!osx)"
 env:
-  # build_externals.sh passes -DLCG_VERSION_POSTFIX. Kept on this ATLAS-only
-  # recipe, not in shared defaults, so the reusable LCG externals keep
-  # stacks-identical hashes. LCG_PLATFORM comes from lcg-view (see body).
+  # Here, not in the shared defaults, so the LCG externals keep stacks' hashes.
   LCG_VERSION_POSTFIX: "_ATLAS_5"
 system:
-  # off = network ALLOWED (sandbox_network is "is the restriction on?"; default
-  # on blocks network). build_externals.sh clones atlasexternals and downloads
-  # Gaudi/acts/GeoModel/vecmem tarballs, so it needs network. NB this is against
-  # bits' reproducible default; cleaner end state is to prefetch those and keep
-  # the sandbox closed (follow-up).
+  # Network on: build_externals.sh clones atlasexternals and downloads Gaudi,
+  # ACTS, GeoModel and VecMem (prefetching them would let the sandbox stay closed).
   sandbox_network: "off"
 ---
 #!/bin/bash -e
 ##############################
 . $(bits-include ModuleRecipe)
 ##############################
-MODULE_OPTIONS="--lib --cmake"   # expose AthenaExternals libs + CMake config to athena
+MODULE_OPTIONS="--lib --cmake"
 ##############################
-# Build AthenaExternals exactly as an ATLAS developer would: run athena's own
-# Projects/Athena/build_externals.sh, UNCHANGED. bits supplies the LCG base
-# (via lcg-view -> LCG_RELEASE_BASE) and the toolchain; ATLAS's script pins
-# atlasexternals (externals.txt) + Gaudi/acts/GeoModel/vecmem + LCG 110.
+# athena's own Projects/Athena/build_externals.sh, unchanged; bits supplies the
+# LCG base (lcg-view) and the toolchain.
 export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:?lcg-view must export LCG_RELEASE_BASE}"
-# lcg-view exports the platform it wrote its manifests for (the install arch);
-# fall back to the same derivation so the compiler/build-type axes follow.
-export LCG_PLATFORM="${LCG_PLATFORM:-${EFFECTIVE_ARCHITECTURE:?}}"
-# el9 build image ships only C.UTF-8; ATLAS build_project_externals.sh otherwise
-# forces en_US.UTF-8 (unset/"C"), and every /bin/sh warns. Pin C.UTF-8 as CI does.
+export LCG_PLATFORM="${LCG_PLATFORM:-${EFFECTIVE_ARCHITECTURE:?}}"   # lcg-view's platform
+# The el9 image has only C.UTF-8; ATLAS's scripts would otherwise force en_US.UTF-8.
 export LANG=C.UTF-8
 export LC_ALL=C.UTF-8
-# -c disables RPM packaging.
-# Build in a writable dir — bits mounts SOURCES read-only, so ATLAS's
-# default ../build (under SOURCES) fails. -b redirects checkout/build/
-# install here; the InstallArea search below follows it.
+# SOURCES is read-only, so checkout, build and install go here (-b).
 _bdir="$PWD/build"
-# Keep Ninja, but drive the SUPERBUILD serially (-j1): each ExternalProject's install
-# runs `cmake -E copy_directory <pkg> <shared platform dir>`, which is NOT concurrency-
-# safe — flake8_atlas/PyModules race under -j. Each external's own compile still
-# self-parallelizes (its own ninja, all cores), so the compile speedup is kept.
-# The bits pip package exports PIP_ROOT (bits' generic <PKG>_ROOT convention).
-# pip also reads PIP_ROOT as its own --root install option (PIP_<OPT> env mapping),
-# so PyModules' `pip install --user` gets --root=<pip pkg prefix>; change_root then
-# prepends that prefix to PYTHONUSERBASE and the wheels land in pip's own tree
-# instead of PyModulesBuild, leaving copy_directory's source empty. Findpip uses
-# PIP_LCGROOT (not PIP_ROOT), so dropping PIP_ROOT is safe for pip discovery.
+# pip reads PIP_ROOT (bits' <PKG>_ROOT) as --root and would install PyModules'
+# wheels into the pip package; Findpip uses PIP_LCGROOT, so drop it.
 unset PIP_ROOT
-# Build the legacy CORAL/COOL conditions stack here: AthenaExternals hardcodes
-# ATLAS_BUILD_CORAL/COOL=OFF (expects them from an ATLAS-flavoured LCG), but base
-# LCG 110 no longer ships them. CORAL unconditionally builds an OracleAccess
-# plugin needing Oracle Instant Client (not redistributable; the bits oracle pkg
-# is an empty stub), so strip that one subdir via ATLAS_CORAL_PATCH. Athena uses
-# only CORAL RelationalAccess + the SQLite/Frontier backends, not OracleAccess.
-# The same patch also drops the CORAL_SERVER subdirs (the coral:// server): they
-# need obsolete Sun RPC (rpc/rpc.h, removed from glibc -> libtirpc); athena uses
-# CORAL only as a client, so the server is dead weight. Deleting the single
-# `list(APPEND subdirs CORAL_SERVER/...)` line skips the whole component.
-# (`hostname`, which CORAL's build banner calls, is supplied by the build image
-# via bits-containers build-tools, not patched out here.)
-# NB: the patch value must stay space-free so it survives -x -> cmake -D word-splitting.
 # The package filter of the atlasexternals this Athena pins (build_externals.sh
 # clones it again to build), plus CrestApi, which has no ATLAS_BUILD_* flag.
 _ext=$(sed -n 's/^AthenaExternalsVersion *= *//p' "$SOURCEDIR/Projects/Athena/externals.txt" | tr -d ' \r')
@@ -89,18 +53,16 @@ git clone -q --depth 1 --branch "$_ext" "$_url" "$_src" 2>/dev/null ||
 _filter="$PWD/athena-package-filters.txt"
 sed '/^- \.\*$/i + External/CrestApi' "$_src/Projects/AthenaExternals/package_filters.txt" > "$_filter"
 grep -qx '+ External/CrestApi' "$_filter" || { echo "ERROR: no '- .*' line in atlasexternals $_ext package_filters.txt" >&2; exit 1; }
+# CORAL/COOL built here (LCG 110 has none); athena uses only RelationalAccess with
+# SQLite/Frontier, so OracleAccess and CORAL_SERVER (Sun RPC) go. -x stays space-free.
+# -c: no RPMs. -j1: the superbuild's installs race; each external builds in parallel.
 "$SOURCEDIR/Projects/Athena/build_externals.sh" -c -b "$_bdir" -x "-G Ninja -DATLAS_BUILD_CORAL=ON -DATLAS_BUILD_COOL=ON -DATLAS_CORAL_PATCH=PATCH_COMMAND;sed;-i;-e;s/OracleAccess//g;-e;\#CORAL_SERVER/#d;CMakeLists.txt -DATLAS_PACKAGE_FILTER_FILE=$_filter" -k "-j1"
-# Route the produced InstallArea platform subtree into $INSTALLROOT so bits
-# captures it as this package. build_project.sh installs to
-# <builddir>/install/<proj>/<ver>/InstallArea/<platform>.
-# TODO(verify on build host): confirm the build dir + that flattening the
-# platform subtree (vs preserving InstallArea/) is what athena expects.
+# The package is the InstallArea's platform subtree (TODO: confirm athena wants it flat).
 _ia=$(find "$_bdir/install" -maxdepth 7 -type d -name InstallArea 2>/dev/null | head -1)
 [ -n "$_ia" ] || { echo "ERROR: AthenaExternals InstallArea not found after build_externals.sh" >&2; exit 1; }
 rsync -a "$_ia"/*/ "$INSTALLROOT"/
-# Carry the AthenaExternals env down to athena's find_package(AthenaExternals).
-# TODO(verify): the exact var athena reads (ATLAS_EXT_DIR vs CMAKE_PREFIX_PATH).
 MakeModule
+# TODO: confirm athena reads ATLAS_EXT_DIR (not only CMAKE_PREFIX_PATH).
 cat >> "$MODULEFILE" <<EOF
 setenv ATLAS_EXT_DIR  \$PKG_ROOT
 setenv ATHENAEXTERNALS_VERSION $_ext

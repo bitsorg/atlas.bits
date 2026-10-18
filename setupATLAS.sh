@@ -1,14 +1,7 @@
 #!/bin/bash
-# setupATLAS.sh - drop-in replacement for the standard ATLAS `setupATLAS` that
-# makes the *bits* backend the provider of externals and the LCG stack.
-#
-# Usage (source it, exactly like the real setupATLAS):
-#     source setupATLAS.sh
-#     asetup ...        # asetup/find_package now resolve externals + LCG from bits
-#
-# --- where the bits install lives (override BITS_SW for your checkout) -----------
-# Resolve this script's own directory so the default sw/ tree is found regardless
-# of the caller's cwd (this file is meant to be sourced).
+# Drop-in for ATLAS's setupATLAS with bits providing the externals and the LCG stack:
+#     source setupATLAS.sh; asetup ...
+# BITS_SW: the bits install (default: the sw/ beside this script).
 if [ -n "${BASH_SOURCE[0]:-}" ]; then
     _bits_self="${BASH_SOURCE[0]}"
 else
@@ -19,19 +12,14 @@ _bits_selfdir="$(cd "$(dirname "${_bits_self}")" >/dev/null 2>&1 && pwd)"
 : "${BITS_ARCH:=x86_64-el9}"
 _bits_base="${BITS_SW}/${BITS_ARCH}"
 
-# --- 1) LCG stack from bits ------------------------------------------------------
-# The lcg-view package installs LCG_<n>_ATLAS_<r>/LCG_externals_<platform>.txt under
-# its own prefix; that prefix IS LCG_RELEASE_BASE. AtlasLCG's find_package(LCG)
-# keys off it and sets <PKG>_LCGROOT from the manifest's dir field.
+# 1) LCG: lcg-view's prefix is LCG_RELEASE_BASE, which AtlasLCG's find_package(LCG) reads.
 if [ -d "${_bits_base}/lcg-view/latest" ]; then
     export LCG_RELEASE_BASE="${LCG_RELEASE_BASE:-${_bits_base}/lcg-view/latest}"
     echo "setupATLAS.sh: LCG_RELEASE_BASE -> ${LCG_RELEASE_BASE} (bits)"
 fi
 
-# --- 2) bits-built externals + Athena release ------------------------------------
-# Each bits-built ATLAS project installs a relocatable setup.sh that sets
-# CMAKE_PREFIX_PATH / PATH / LD_LIBRARY_PATH ...; sourcing Athena pulls
-# AthenaExternals transitively.
+# 2) Externals and Athena: each project's relocatable setup.sh; Athena's pulls in
+# AthenaExternals.
 for _p in atlasexternals Athena; do
     if [ -f "${_bits_base}/${_p}/latest/setup.sh" ]; then
         source "${_bits_base}/${_p}/latest/setup.sh"
