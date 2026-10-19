@@ -40,7 +40,8 @@ wd="${WORK_DIR:-${BITS_WORK_DIR:-$PWD}}"
     --platform "$plat" \
     --version-number "$relnum" \
     --postfix "$postfix" \
-    --out "$INSTALLROOT"
+    --out "$INSTALLROOT" \
+    --closure "$INSTALLROOT/.meta.json"
 
 # Per-entry publish identity (templates, version-revision, family, arch) for the
 # CVMFS rewrite below. Same scan as the overlay, so the entries match its lines.
@@ -48,9 +49,9 @@ mkdir -p "$INSTALLROOT/etc/lcg-view"
 python3 - "$wd" "$EFFECTIVE_ARCHITECTURE" "$INSTALLROOT/etc/lcg-view/entries.json" <<\PY
 import json, os, sys
 sys.path.insert(0, os.environ["BITS_SCRIPT_DIR"])
-from bits_helpers.overlay.lcg import collect, manifest_line
+from bits_helpers.overlay.lcg import closure_of, collect, manifest_line
 wd, arch, out = sys.argv[1:]
-records, _, errors = collect(wd, arch)
+records, _, errors = collect(wd, arch, closure_of(os.environ["INSTALLROOT"] + "/.meta.json"))
 if errors:
     sys.exit("lcg-view: " + "; ".join(errors))
 entries = []
