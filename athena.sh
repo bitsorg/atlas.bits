@@ -33,6 +33,7 @@ unset PIP_ROOT
 
 # AthExHelloWorld and what `athena.py HelloWorldConfig.py` loads (python imports,
 # CompFactory components, the libraries they link): the build skips the others.
+# PersistencySvc: PoolSvc links it in 25.0.71 (gone by 25.0.75).
 _afilter="$PWD/athena-package-filters.txt"
 cat > "$_afilter" <<'FILTER'
 + AtlasTest/TestTools
@@ -67,6 +68,7 @@ cat > "$_afilter" <<'FILTER'
 + Control/StoreGate
 + Control/Valkyrie
 + Control/xAODRootAccessInterfaces
++ Database/APR/PersistencySvc
 + Database/APR/StorageSvc
 + Database/AthenaPOOL/AthenaPoolUtilities
 + Database/AthenaPOOL/PoolSvc
