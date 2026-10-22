@@ -31,9 +31,9 @@ export ATLAS_EXT_DIR="${ATLASEXTERNALS_ROOT}"
 
 unset PIP_ROOT
 
-# AthExHelloWorld and what `athena.py HelloWorldConfig.py` loads (python imports,
-# CompFactory components, the libraries they link): the build skips the others.
-# PersistencySvc: PoolSvc links it in 25.0.71 (gone by 25.0.75).
+# AthExHelloWorld and what `athena.py HelloWorldConfig.py` loads; the build skips the
+# others. PersistencySvc: PoolSvc links it in 25.0.71. No AthLinksSA: its AthLinks
+# clashes with Control/AthLinks (Athena's own filter drops it too).
 _afilter="$PWD/athena-package-filters.txt"
 cat > "$_afilter" <<'FILTER'
 + AtlasTest/TestTools
@@ -51,7 +51,6 @@ cat > "$_afilter" <<'FILTER'
 + Control/AthenaMPTools
 + Control/AthenaServices
 + Control/AthLinks
-+ Control/AthLinksSA
 + Control/AthToolSupport/AsgMessaging
 + Control/AthToolSupport/AsgTools
 + Control/CLIDComps
