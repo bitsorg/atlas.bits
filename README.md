@@ -18,10 +18,20 @@ lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
 
 ## Prerequisites
 
-- bits and its requirements (Python 3, git, Environment Modules), see the
-  [bits installation instructions](https://github.com/bitsorg/bits#installation).
-- ATLAS targets `x86_64-el9-gcc15-opt`. The bits-console ATLAS community also offers
-  el8, el10 and aarch64-el9; Ubuntu is not a supported Athena platform.
+- bits, and one of two setups (see [Installation &
+  Prerequisites](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#2-installation--prerequisites)
+  in the bits user guide; `bits doctor` checks the machine):
+  - docker or rootless podman, to build in the platform's builder image with `--docker`
+    (recommended, and the only way to reuse what the ATLAS CI built);
+  - or the system packages listed in [Building
+    natively](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#building-natively-what-to-install),
+    to build with this machine's compilers and libraries.
+- A platform the ATLAS CI builds, so that its binaries are reused: `x86_64-el9` (ATLAS
+  targets `x86_64-el9-gcc15-opt`), `x86_64-el8`, `x86_64-el10` and `aarch64-el9`; Ubuntu
+  is not a supported Athena platform. Pass it as `--architecture`: by itself bits names a
+  machine after its OS (an EL9 machine `slc9_x86-64`), which is not one of them. See
+  [Finding a platform with pre-built
+  binaries](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#finding-a-platform-with-pre-built-binaries).
 - Network access during the build. `atlasexternals` and `Athena` set
   `sandbox_network: "off"` because `build_externals.sh` clones `atlasexternals` and
   downloads the Gaudi, ACTS, GeoModel and VecMem sources.
@@ -31,19 +41,22 @@ lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
 
 ```bash
 bits init atlas.bits && cd atlas.bits     # or: git clone https://github.com/bitsorg/atlas.bits
-bits use build --architecture x86_64-el9 --defaults atlas::gcc15::opt --set release=LCG_110 \
+bits use build --docker --architecture x86_64-el9 --defaults atlas::gcc15::opt --set release=LCG_110 \
               --set athena_release=release/25.0.75
 bits build --dry-run Athena
 bits build Athena                         # LCG base, AthenaExternals and Athena
 bits enter Athena/latest
 ```
 
-The `bits use` profile stores the settings in this checkout, so every later
-`bits build` here gets them; options given on the command line still win. The build
-architecture is `x86_64-el9-gcc15-opt`. `bits build atlasexternals` builds only the LCG
-base and AthenaExternals. Check the machine with `bits doctor`. To build elsewhere,
-`export BITS_WORK_DIR=/path/to/sw`. The profile format is described in the
-[bits user guide](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#4-configuration).
+The `bits use` profile stores the settings in this checkout, so every later `bits build`
+here gets them; options given on the command line still win. The build architecture is
+`x86_64-el9-gcc15-opt`. `--docker` builds in the platform's builder image; on a machine of
+the same platform `bits enter` then works here. Without it, bits builds with this
+machine's compilers and system packages, and reuses nothing the CI built. `bits build
+atlasexternals` builds only the LCG base and AthenaExternals. Check the machine with `bits
+doctor`. To build elsewhere, `export BITS_WORK_DIR=/path/to/sw`. The profile format is
+described in the [bits user
+guide](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#4-configuration).
 
 To use an ATLAS-style setup instead of `bits enter`, source `setupATLAS.sh` from this
 repository. It takes Athena, then the `atlasexternals` and `lcg-view` that Athena was
