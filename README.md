@@ -41,21 +41,23 @@ lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
 
 ```bash
 bits init atlas.bits && cd atlas.bits     # or: git clone https://github.com/bitsorg/atlas.bits
-bits use build --docker --architecture x86_64-el9 --defaults atlas::gcc15::opt --set release=LCG_110 \
-              --set athena_release=release/25.0.75
+bits use --architecture x86_64-el9 --defaults atlas::gcc15::opt
+bits use build --docker --set release=LCG_110 \
+                        --set athena_release=release/25.0.75
 bits build --dry-run Athena
 bits build Athena                         # LCG base, AthenaExternals and Athena
 bits enter Athena/latest
 ```
 
-The `bits use` profile stores the settings in this checkout, so every later `bits build`
-here gets them; options given on the command line still win. The build architecture is
-`x86_64-el9-gcc15-opt`. `--docker` builds in the platform's builder image; on a machine of
-the same platform `bits enter` then works here. Without it, bits builds with this
-machine's compilers and system packages, and reuses nothing the CI built. `bits build
-atlasexternals` builds only the LCG base and AthenaExternals. Check the machine with `bits
-doctor`. To build elsewhere, `export BITS_WORK_DIR=/path/to/sw`. The profile format is
-described in the [bits user
+The `bits use` profile stores the settings in this checkout: the platform and the defaults
+for every command, so `bits q` and `bits enter` find this build among others in the work
+directory, the rest for `bits build`; options given on the command line still win. The
+build architecture is `x86_64-el9-gcc15-opt`. `--docker` builds in the platform's builder
+image; on a machine of the same platform `bits enter` then works here. Without it, bits
+builds with this machine's compilers and system packages, and reuses nothing the CI built.
+`bits build atlasexternals` builds only the LCG base and AthenaExternals. Check the
+machine with `bits doctor`. To build elsewhere, `export BITS_WORK_DIR=/path/to/sw`. The
+profile format is described in the [bits user
 guide](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#4-configuration).
 
 To use an ATLAS-style setup instead of `bits enter`, source `setupATLAS.sh` from this
