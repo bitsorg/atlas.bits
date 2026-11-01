@@ -28,8 +28,7 @@ lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
     to build with this machine's compilers and libraries.
 - A platform the ATLAS CI builds, so that its binaries are reused: `x86_64-el9` (ATLAS
   targets `x86_64-el9-gcc15-opt`), `x86_64-el8`, `x86_64-el10` and `aarch64-el9`; Ubuntu
-  is not a supported Athena platform. Pass it as `--architecture`: by itself bits names a
-  machine after its OS (an EL9 machine `slc9_x86-64`), which is not one of them. See
+  is not a supported Athena platform. Pass it as `--architecture`; on one of them, `bits architecture` prints it. See
   [Finding a platform with pre-built
   binaries](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#finding-a-platform-with-pre-built-binaries).
 - Network access during the build. `atlasexternals` and `Athena` set
