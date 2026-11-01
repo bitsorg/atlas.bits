@@ -28,13 +28,42 @@ lcg.bits (LCG_110)  -->  lcg-view  -->  atlasexternals  -->  Athena
     to build with this machine's compilers and libraries.
 - A platform the ATLAS CI builds, so that its binaries are reused: `x86_64-el9` (ATLAS
   targets `x86_64-el9-gcc15-opt`), `x86_64-el8`, `x86_64-el10` and `aarch64-el9`; Ubuntu
-  is not a supported Athena platform. Pass it as `--architecture`; on one of them, `bits architecture` prints it. See
+  is not a supported Athena platform. What is published on CVMFS today is `x86_64-el9`
+  (gcc15 `opt` and `dbg`, gcc14 `opt`). Pass the platform as `--architecture`; on one of
+  them, `bits architecture` prints it. See
   [Finding a platform with pre-built
   binaries](https://github.com/bitsorg/bits/blob/main/docs/USERGUIDE.md#finding-a-platform-with-pre-built-binaries).
 - Network access during the build. `atlasexternals` and `Athena` set
   `sandbox_network: "off"` because `build_externals.sh` clones `atlasexternals` and
   downloads the Gaudi, ACTS, GeoModel and VecMem sources.
 - Read access to `https://gitlab.cern.ch/atlas/athena`, which both recipes check out.
+
+## Using the published Athena
+
+Athena is published on CVMFS under `/cvmfs/bits.cern.ch/atlas`, now `25.0.71` for
+`x86_64-el9-gcc15-opt`, `x86_64-el9-gcc15-dbg` and `x86_64-el9-gcc14-opt`, with its
+AthenaExternals and the LCG base it was built with (LCG 110, `LCG_110_ATLAS_5`). To run
+it, nothing has to be built; `setupATLAS.sh` from a checkout of this repository sets up the
+LCG base, AthenaExternals and Athena from CVMFS:
+
+```bash
+git clone https://github.com/bitsorg/atlas.bits && cd atlas.bits
+bits q -a x86_64-el9-gcc15-opt Athena               # the published versions
+BITS_ARCH=x86_64-el9-gcc15-opt BITS_ATHENA=25.0.71 source setupATLAS.sh
+athena.py AthExHelloWorld/HelloWorldConfig.py       # the example this Athena builds
+```
+
+Run it in a plain shell (bash or zsh). It prints the `LCG_RELEASE_BASE` it uses and each
+`setup.sh` it sources, then, when `/cvmfs/atlas.cern.ch` is mounted, runs the stock
+ATLASLocalRootBase setup (`asetup` and `lsetup` are then available, but not needed for
+this Athena); without it, it says so and goes on. Without `BITS_ATHENA` it takes the latest
+Athena built in `sw/` beside it, else the newest published; `BITS_ARCH` picks the platform
+(default `x86_64-el9-gcc15-opt`).
+
+In the checkout, `bits enter -a x86_64-el9-gcc15-opt Athena/25.0.71-2` instead opens a
+sub-shell from the release view `/cvmfs/bits.cern.ch/atlas/views/LCG_110/<platform>`: the
+LCG base, AthenaExternals and Athena on the paths, but not Athena's own run-time settings
+(`JOBOPTSEARCHPATH`, `DATAPATH`, ...). For `athena.py`, use `setupATLAS.sh`.
 
 ## Getting started
 
@@ -45,7 +74,7 @@ bits use build --docker --set release=LCG_110 \
                         --set athena_release=release/25.0.75
 bits build --dry-run Athena
 bits build Athena                         # LCG base, AthenaExternals and Athena
-bits enter Athena/latest
+bits enter Athena/latest                  # the paths; to run athena.py, setupATLAS.sh (below)
 ```
 
 The `bits use` profile stores the settings in this checkout: the platform and the defaults
@@ -68,6 +97,33 @@ sources the `setup.sh` of `atlasexternals` and `Athena`, then the stock ALRB set
 `BITS_ATHENA=25.0.75` picks an Athena version (default: the latest built, else the
 newest published), and stops when the version given is not found; `BITS_ARCH` defaults to
 `x86_64-el9-gcc15-opt`. An `LCG_RELEASE_BASE` set before is kept, and said so.
+
+After a build, run the example the same way, from the checkout:
+
+```bash
+source setupATLAS.sh                                # the latest Athena built in sw/
+athena.py AthExHelloWorld/HelloWorldConfig.py
+```
+
+With another work directory (`BITS_WORK_DIR`), set `BITS_SW` to it first, or
+`setupATLAS.sh` takes the Athena published on CVMFS.
+
+### Building more of Athena
+
+`athena.sh` builds `AthExHelloWorld` and the packages `athena.py` loads to run it: the
+package filter in the recipe, `+ <path>` lines ending with `- .*`, as in ATLAS's
+`package_filters.txt`. To build more, add `+ <path>` lines for the packages (and the
+packages they need) before `- .*`; the build then takes longer and needs more of
+AthenaExternals, which `atlasexternals` already builds with ATLAS's own filter.
+
+### When a build stops
+
+| Message | Cause and fix |
+|---|---|
+| `lcg-view: 'main' is not an LCG release` | No `--set release=LCG_110` (nor in `bits use build`). |
+| `this Athena wants LCG_<N><postfix>; lcg-view provides ...` | The athena ref wants another LCG than `lcg-view` makes (`LCG_110_ATLAS_5`, for Athena 25.0.71 to 25.0.75). Another postfix needs `lcg-view.sh` and `atlasexternals.sh` changed. |
+| `Athena <version> needs gcc15 ...` | Athena 25.0.74 and later: build with `--defaults atlas::gcc15::opt`. |
+| A download or clone fails in `atlasexternals` or `Athena` | The build needs the network (Prerequisites); with `--sandbox`, the recipes already allow it. |
 
 ## Notes for ATLAS users
 
