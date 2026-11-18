@@ -171,10 +171,10 @@ AthenaExternals, which `atlasexternals` already builds with ATLAS's own filter.
 | File | Purpose |
 |---|---|
 | `defaults-atlas.sh` | ATLAS overlay: `stacks.bits` base, release tracking, CVMFS layout, `_ATLAS_5` deltas and disables |
-| `lcg-externals.sh`, `lcg-generators.sh` | ATLAS's top-level LCG externals and generators (from the `LCG_110_ATLAS_5` manifest) |
-| `lcg-view.sh` | Writes the `LCG_<N>_ATLAS_5` manifests over the bits-built LCG closure |
-| `atlasexternals.sh` | AthenaExternals, built with ATLAS's `build_externals.sh` |
-| `athena.sh` | Athena, built with ATLAS's `build.sh` |
+| `packages/lcg-externals.sh`, `packages/lcg-generators.sh` | ATLAS's top-level LCG externals and generators (from the `LCG_110_ATLAS_5` manifest) |
+| `packages/lcg-view.sh` | Writes the `LCG_<N>_ATLAS_5` manifests over the bits-built LCG closure |
+| `packages/atlasexternals.sh` | AthenaExternals, built with ATLAS's `build_externals.sh` |
+| `packages/athena.sh` | Athena, built with ATLAS's `build.sh` |
 | `setupATLAS.sh` | Optional `setupATLAS` replacement that uses the bits-built LCG view and projects |
 
 The compiler and build-type profiles (`gcc13`, `gcc14`, `gcc15`, `opt`, `dbg`, `cuda`, ...)
